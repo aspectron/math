@@ -33,7 +33,7 @@ class matrix;
 //    rotates v around Z by c radians.				   
 
 
-class euler_angles    // (x,y,z)=ang 1,2,3, w=order code 
+class MATH_API euler_angles    // (x,y,z)=ang 1,2,3, w=order code 
 {
 
 	protected:

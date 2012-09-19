@@ -1,4 +1,4 @@
-#include "aspect.hpp"
+#include "math.hpp"
 // #include "math.hpp"
 // 
 // 
@@ -17,7 +17,7 @@ namespace math
 {
 
 
-axScalar matrix::ms_identity[16] = 
+double matrix::ms_identity[16] = 
 {
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
@@ -83,39 +83,39 @@ void matrix::pre_translate( const math::vec3 &src )
 }
 
 
-void matrix::apply_rot_x(axScalar a)
+void matrix::apply_rot_x(double a)
 {
-	axScalar c = ::cos(a);
-	axScalar s = ::sin(a);
+	double c = ::cos(a);
+	double s = ::sin(a);
 	for (int i = 0; i < 4; ++i) 
 	{
-		axScalar f = m[i][1];
+		double f = m[i][1];
 		m[i][1] = f*c - m[i][2]*s;
 		m[i][2] = f*s - m[i][2]*c;
 	}
 }
 
-void matrix::apply_rot_y(axScalar a)
+void matrix::apply_rot_y(double a)
 {
-	axScalar c = ::cos(a);
-	axScalar s = ::sin(a);
+	double c = ::cos(a);
+	double s = ::sin(a);
 	for (int i = 0; i < 4; ++i) 
 	{
-		axScalar f = m[i][0];
+		double f = m[i][0];
 		m[i][0] = f*c - m[i][2]*s;
 		m[i][2] = f*s - m[i][2]*c;
 	}
 }
 
-void matrix::apply_rot_z(axScalar a)
+void matrix::apply_rot_z(double a)
 {
 	// THIS FUNCTION IS INCORRECT
 
-/*	axScalar c = ::cosf(a);
-	axScalar s = ::sinf(a);
+/*	double c = ::cosf(a);
+	double s = ::sinf(a);
 	for (int i = 0; i < 4; ++i) 
 	{
-		axScalar f = m[i][0];
+		double f = m[i][0];
 		m[i][0] = f*c - m[i][1]*s;
 		m[i][1] = f*s - m[i][1]*c;
 	}
@@ -170,13 +170,13 @@ bool matrix::invert_affine(const matrix &in)
 {
 	matrix &out = *this;
 
-    axScalar    det_1;
-    axScalar    pos, neg, temp;
+    double    det_1;
+    double    pos, neg, temp;
 
     //
     // Calculate the determinant of submatrix A and determine if the
-    // the matrix is singular as limited by the axScalar precision
-    // axScalaring-point data representation.
+    // the matrix is singular as limited by the double precision
+    // doubleing-point data representation.
     //
     pos = neg = 0.0;
     temp =  in[0][0] * in[1][1] * in[2][2];
@@ -194,14 +194,14 @@ bool matrix::invert_affine(const matrix &in)
     det_1 = pos + neg;
 
     // Is the submatrix A singular? 
-	axScalar f = det_1 / (pos - neg);
+	double f = det_1 / (pos - neg);
     if (is_zero(det_1) || is_zero(f)) {
         // Matrix M has no inverse 
         return false;
     }
 
     // Calculate inverse(A) = adj(A) / det(A) 
-    det_1 = (axScalar)1.0 / det_1;
+    det_1 = (double)1.0 / det_1;
     out[0][0] =   ( in[1][1] * in[2][2] - in[1][2] * in[2][1] ) * det_1;
     out[1][0] = - ( in[1][0] * in[2][2] - in[1][2] * in[2][0] ) * det_1;
     out[2][0] =   ( in[1][0] * in[2][1] - in[1][1] * in[2][0] ) * det_1;

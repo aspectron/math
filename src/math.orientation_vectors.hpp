@@ -17,7 +17,7 @@ class matrix;
 //============================================================================
 // Orienation vectors
 //
-class orientation_vectors
+class MATH_API orientation_vectors
 {
 	public:
 

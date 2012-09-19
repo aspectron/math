@@ -11,25 +11,25 @@ namespace aspect
 	namespace math
 	{
 
-		class vec3
+		class MATH_API vec3
 		{
 
 			public:				
 
 				union
 				{
-					struct { axScalar x,  y,  z; };
-					struct { axScalar r,  g,  b; };
-					struct { axScalar Y, Cb, Cr; };
-					axScalar v[3];
+					struct { double x,  y,  z; };
+					struct { double r,  g,  b; };
+					struct { double Y, Cb, Cr; };
+					double v[3];
 				};
 
 				// constructors...
 
 				vec3	() { x = y = z = 0.0; }
-				vec3	(axScalar _x, axScalar _y, axScalar _z = 0.0) {x = _x; y = _y; z = _z;}
-				vec3	(const vec2& src, axScalar _z) { x = src.x; y = src.y; z = _z; }
-//				vec3	(int _x, int _y, int _z = 0) {x = (axScalar)_x; y = (axScalar)_y; z = (axScalar)_z;}
+				vec3	(double _x, double _y, double _z = 0.0) {x = _x; y = _y; z = _z;}
+				vec3	(const vec2& src, double _z) { x = src.x; y = src.y; z = _z; }
+//				vec3	(int _x, int _y, int _z = 0) {x = (double)_x; y = (double)_y; z = (double)_z;}
 
 				// initializers...
 
@@ -37,9 +37,9 @@ namespace aspect
 
 				// accessors and casts...
 
-				axScalar &operator [] (int i) { return v[i]; }
-				operator axScalar*() { return(v); }
-				operator const axScalar*() { return(v); }
+				double &operator [] (int i) { return v[i]; }
+				operator double*() { return(v); }
+				operator const double*() { return(v); }
 
 				// operators...
 
@@ -52,12 +52,12 @@ namespace aspect
 				vec3	operator -  (const vec3 &w)	const;	
 				vec3	operator +  (const vec3 &w)	const;	
 				vec3	operator /  (const vec3 &w)	const;	
-				vec3	operator *  (axScalar f)				const;	
-				vec3	operator /  (axScalar f)				const;	
+				vec3	operator *  (double f)				const;	
+				vec3	operator /  (double f)				const;	
 
-				vec3&	operator *= (const axScalar f);
-				vec3&	operator += (const axScalar f);
-				vec3&	operator -= (const axScalar f);
+				vec3&	operator *= (const double f);
+				vec3&	operator += (const double f);
+				vec3&	operator -= (const double f);
 
 				vec3 operator -() const; 
 				vec3 operator +() const;
@@ -68,24 +68,24 @@ namespace aspect
 				// misc functions...
 
 				bool		is_zero_length	() const	{ return is_zero(x) && is_zero(y) && is_zero(z); }
-				axScalar		length		() const;							// Compute the length of a vector
-				axScalar		distance		(const vec3& loc) const;		// Compute the distance between two points
-				axScalar		distance		(const vec2& loc) const;		// Compute the distance between two points
-				axScalar		sqr_distance	(const vec3& loc) const;		// Compute SQR distance between two points
-				axScalar		get_angle		(const vec3& loc) const;		// Get the angle between 2 vectors
-				axScalar		max_value		() const	{ return x > y ? (x > z ? x : z) : (y > z ? y : z); }
+				double		length		() const;							// Compute the length of a vector
+				double		distance		(const vec3& loc) const;		// Compute the distance between two points
+				double		distance		(const vec2& loc) const;		// Compute the distance between two points
+				double		sqr_distance	(const vec3& loc) const;		// Compute SQR distance between two points
+				double		get_angle		(const vec3& loc) const;		// Get the angle between 2 vectors
+				double		max_value		() const	{ return x > y ? (x > z ? x : z) : (y > z ? y : z); }
 
 				// Get a point along line AB, at a distance from A expressed in relation to
 				// the distance from A to B.  Use this to project(extrapolate) or interpolate a line.
-				void		get_point_on_line	(vec3& locA, vec3& locB, const axScalar f);
+				void		get_point_on_line	(vec3& locA, vec3& locB, const double f);
 
 				void		get_nearest_point_on_line(const vec3 &pt, const vec3 &ptLine1, const vec3 &ptLine2);
 
 
-				axScalar		dot				(const vec3& loc) const;
+				double		dot				(const vec3& loc) const;
 				void		cross			(vec3& locOut, const vec3& loc) const;
 				void		normalize		();
-				void		clamp			(axScalar _min, axScalar _max);
+				void		clamp			(double _min, double _max);
 
 				void		from_string(const char *sz);
 				void		to_string(char *sz, int iMaxLen);
@@ -133,18 +133,18 @@ namespace aspect
 		inline vec3	vec3::operator -  (const vec3 &w)	const	{ return vec3(x-w.x, y-w.y, z-w.z); }
 		inline vec3	vec3::operator +  (const vec3 &w)	const	{ return vec3(x+w.x, y+w.y, z+w.z); }
 		inline vec3	vec3::operator /  (const vec3 &w)	const	{ return vec3(x/w.x, y/w.y, z/w.z); }
-		inline vec3	vec3::operator *  (axScalar f)				const	{ return vec3(x*f, y*f, z*f); }
-		inline vec3	vec3::operator /  (axScalar f)				const	{ return vec3(x/f, y/f, z/f); }
+		inline vec3	vec3::operator *  (double f)				const	{ return vec3(x*f, y*f, z*f); }
+		inline vec3	vec3::operator /  (double f)				const	{ return vec3(x/f, y/f, z/f); }
 
-		inline vec3&	vec3::operator *= (const axScalar f)			{ x *= f; y *= f; z *= f; return *this; }
-		inline vec3&	vec3::operator += (const axScalar f)			{ x += f; y += f; z += f; return *this; }
-		inline vec3&	vec3::operator -= (const axScalar f)			{ x -= f; y -= f; z -= f; return *this; }
+		inline vec3&	vec3::operator *= (const double f)			{ x *= f; y *= f; z *= f; return *this; }
+		inline vec3&	vec3::operator += (const double f)			{ x += f; y += f; z += f; return *this; }
+		inline vec3&	vec3::operator -= (const double f)			{ x -= f; y -= f; z -= f; return *this; }
 
 		inline vec3	vec3::operator -() const { return (vec3(-x, -y, -z)); }
 		inline vec3	vec3::operator +() const { return (*this); }
 
 		inline vec3	operator * (const vec3 &p1, const vec3 &p2) { return vec3(p1.x*p2.x,p1.y*p2.y,p1.z*p2.z); } 
-		inline vec3	operator / (const axScalar f, const vec3 &p) { return vec3(f/p.x,f/p.y,f/p.z); } 
+		inline vec3	operator / (const double f, const vec3 &p) { return vec3(f/p.x,f/p.y,f/p.z); } 
 
 		inline vec3 operator ^(const vec3& A, const vec3& B)
 		{
@@ -155,20 +155,20 @@ namespace aspect
 
 		// vec3::fDistance()
 		//   Compute the distance between two locs
-		inline axScalar vec3::distance(const vec3& loc) const 
+		inline double vec3::distance(const vec3& loc) const 
 		{
 			return sqrt( (loc.x-x) * (loc.x-x)
 						 +(loc.y-y) * (loc.y-y)
 						 +(loc.z-z) * (loc.z-z));
 		}
 
-		inline axScalar vec3::distance(const vec2& loc) const 
+		inline double vec3::distance(const vec2& loc) const 
 		{
 			return sqrt( (loc.x-x) * (loc.x-x)
 						 +(loc.y-y) * (loc.y-y));
 		}
 
-		inline axScalar vec3::sqr_distance(const vec3& loc) const 
+		inline double vec3::sqr_distance(const vec3& loc) const 
 		{
 			return ( (loc.x-x) * (loc.x-x)
 					+(loc.y-y) * (loc.y-y)
@@ -177,14 +177,14 @@ namespace aspect
 
 		// vec3::fLength()
 		//   Compute the length of the vector formed by the loc with the origin
-		inline axScalar vec3::length() const 
+		inline double vec3::length() const 
 		{
 			return sqrt(x*x + y*y + z*z);
 		}
 
-		inline axScalar vec3::get_angle(const vec3& loc) const
+		inline double vec3::get_angle(const vec3& loc) const
 		{
-			axScalar f = length() * loc.length();
+			double f = length() * loc.length();
 			if (is_zero(f)) return 0.f;
 			f = dot(loc) / f;
 			if (f < -1.0) f = -1.0;
@@ -195,14 +195,14 @@ namespace aspect
 		// vec3::GetPointOnLine()
 		//   Get a point along line AB, at a distance from A expressed in relation to
 		//   the distance from A to B.  Use this to project or interpolate a line.
-		inline void vec3::get_point_on_line(vec3& locA, vec3& locB, const axScalar f)
+		inline void vec3::get_point_on_line(vec3& locA, vec3& locB, const double f)
 		{
 			x = locA.x + (f * (locB.x - locA.x));
 			y = locA.y + (f * (locB.y - locA.y));
 			z = locA.z + (f * (locB.z - locA.z));
 		}
 
-		inline axScalar vec3::dot(const vec3& loc) const
+		inline double vec3::dot(const vec3& loc) const
 		{
 			return x * loc.x + y * loc.y + z * loc.z;
 		}
@@ -216,7 +216,7 @@ namespace aspect
 
 		inline void vec3::normalize()	// Convert to unit-vector
 		{
-			axScalar f = distance(vec3(0.f, 0.f, 0.f));
+			double f = distance(vec3(0.f, 0.f, 0.f));
 			if (f > 0.0f) 
 			{
 				x /= f;
@@ -235,11 +235,11 @@ namespace aspect
 		{
 			vec3 ptDiff = pt-ptA;
 			vec3 ptDir = ptB-ptA;
-			axScalar t = ptDiff.dot(ptDir) / ptDir.dot(ptDir);
+			double t = ptDiff.dot(ptDir) / ptDir.dot(ptDir);
 			*this = ptA + ptDir * t;
 		}
 
-		inline void vec3::clamp(axScalar fMin, axScalar fMax)
+		inline void vec3::clamp(double fMin, double fMax)
 		{
 			x = x < fMin ? fMin : x > fMax ? fMax : x;
 			y = y < fMin ? fMin : y > fMax ? fMax : y;

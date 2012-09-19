@@ -19,19 +19,19 @@ namespace math
 class quat;
 class euler_angles;
 
-class matrix_row
+class MATH_API matrix_row
 {
 	public:
 
-		axScalar v[4];
+		double v[4];
 
-		inline float& operator[] (int i) { return v[i]; }
+		inline double& operator[] (int i) { return v[i]; }
 };
 
-#if defined(ASPECT_WIN64)
-class __declspec(align(16)) matrix
+#if CPU(X64) && OS(WINDOWS)
+class MATH_API __declspec(align(16)) matrix
 #else
-class matrix
+class MATH_API matrix
 #endif
 {
 	public:
@@ -50,23 +50,23 @@ class matrix
 */
 			struct 
 			{
-				axScalar m_11, m_12, m_13, m_14;
-				axScalar m_21, m_22, m_23, m_24;
-				axScalar m_31, m_32, m_33, m_34;
-				axScalar m_41, m_42, m_43, m_44;
+				double m_11, m_12, m_13, m_14;
+				double m_21, m_22, m_23, m_24;
+				double m_31, m_32, m_33, m_34;
+				double m_41, m_42, m_43, m_44;
 			};
 
-			axScalar m[4][4];
+			double m[4][4];
 
 			matrix_row m_row[4];
 
-			axScalar v[16];
+			double v[16];
 		};
 
 	public:
 
 //		static matrix ms_Identity;
-		static axScalar ms_identity[16];
+		static double ms_identity[16];
 
 		// constructors...
 
@@ -79,10 +79,10 @@ class matrix
 			::memcpy(m,Src.m,sizeof(m));
 		}
 
-		matrix(  const axScalar f11, const axScalar f12, const axScalar f13, const axScalar f14,
-					const axScalar f21, const axScalar f22, const axScalar f23, const axScalar f24,
-					const axScalar f31, const axScalar f32, const axScalar f33, const axScalar f34,
-					const axScalar f41, const axScalar f42, const axScalar f43, const axScalar f44)
+		matrix(  const double f11, const double f12, const double f13, const double f14,
+					const double f21, const double f22, const double f23, const double f24,
+					const double f31, const double f32, const double f33, const double f34,
+					const double f41, const double f42, const double f43, const double f44)
 			: m_11(f11), m_12(f12), m_13(f13), m_14(f14), 
 			  m_21(f21), m_22(f22), m_23(f23), m_24(f24), 
 			  m_31(f31), m_32(f32), m_33(f33), m_34(f34), 
@@ -113,38 +113,38 @@ class matrix
  
 		// accessors and casts...
 
-				axScalar &		operator () (int x, int y)	{ return m[x][y]; }
-				axScalar *		operator [] (int i)			{ return m[i]; }  
+				double &		operator () (int x, int y)	{ return m[x][y]; }
+				double *		operator [] (int i)			{ return m[i]; }  
 		const	vec4&		operator [] (int i) const { return((vec4&)(*m[i])); }
 
 		// operators...
 
 		matrix & operator *= (const matrix &M);//	{ *this = (*this) * (M); return *this; }
 
-		axScalar& at(int i) { return v[i]; }
+		double& at(int i) { return v[i]; }
 
 		// ---
 		
 		void set_translation			(const vec3 &Dist);
 		void set_scale				(const vec3 &Scale);
-		void set_rot_x                (axScalar fAngle);
-		void set_rot_y                (axScalar fAngle);
-		void set_rot_z                (axScalar fAngle);
-		void set_rotation			(const vec3& axis, axScalar angle);
+		void set_rot_x                (double fAngle);
+		void set_rot_y                (double fAngle);
+		void set_rot_z                (double fAngle);
+		void set_rotation			(const vec3& axis, double angle);
 		void set_orientation			(const quat &quat);
 		
 		inline void set_orientation			(const euler_angles &ang);
 		
-		axScalar	det					(void);
+		double	det					(void);
 		void	adjoint				(const matrix& in);
 
 		bool	invert              (const matrix &src);
 		bool	invert_affine        (const matrix &src);
 
 		void	apply_translation	(const vec3 &t);
-		void	apply_rot_x			(axScalar a);
-		void	apply_rot_y			(axScalar a);
-		void	apply_rot_z			(axScalar a);
+		void	apply_rot_x			(double a);
+		void	apply_rot_y			(double a);
+		void	apply_rot_z			(double a);
 		void	apply_scale			(const vec3& scale);
 		void	apply_orientation	(const quat &quat);
 
@@ -245,21 +245,21 @@ inline void matrix::set_scale(const vec3 &Scale)
 	m[2][2] = Scale.z;
 }
 
-inline void matrix::set_rot_x(axScalar fAngle)
+inline void matrix::set_rot_x(double fAngle)
 {
 	// WARNING:  This function assumes identity matrix.
 	m[2][1] = -(m[1][2] = sin(fAngle));
 	m[2][2] = m[1][1] = cos(fAngle);
 }
 
-inline void matrix::set_rot_y(axScalar fAngle)
+inline void matrix::set_rot_y(double fAngle)
 {
 	// WARNING:  This function assumes identity matrix.
 	m[0][0] = m[2][2] = cos(fAngle);
 	m[0][2] = -(m[2][0] = sin(fAngle));
 }
 
-inline void matrix::set_rot_z(axScalar fAngle)
+inline void matrix::set_rot_z(double fAngle)
 {
 	// WARNING:  This function assumes identity matrix.
 
@@ -282,7 +282,7 @@ inline vec3&	vec3::operator *= (const matrix &A)//			{   *this = m * (*this); re
 	vec3 l;
 	vec3 &B = *this;
 
-	axScalar fX, fY, fZ, fW;
+	double fX, fY, fZ, fW;
 
 	fX = A.m[0][0] * B.x + A.m[1][0] * B.y + A.m[2][0] * B.z + A.m[3][0];
 	fY = A.m[0][1] * B.x + A.m[1][1] * B.y + A.m[2][1] * B.z + A.m[3][1];
@@ -303,7 +303,7 @@ inline vec3&	vec3::operator *= (const matrix &A)//			{   *this = m * (*this); re
 inline vec3 operator * (const matrix &A, const vec3 &B)
 {
 	vec3 l;
-	axScalar fX, fY, fZ, fW;
+	double fX, fY, fZ, fW;
 
 	fX = A.m[0][0] * B.x + A.m[1][0] * B.y + A.m[2][0] * B.z + A.m[3][0];
 	fY = A.m[0][1] * B.x + A.m[1][1] * B.y + A.m[2][1] * B.z + A.m[3][1];
@@ -323,7 +323,7 @@ inline vec3 operator * (const matrix &A, const vec3 &B)
 inline vec3 operator * (const vec3 &B, const matrix &A)
 {
 	vec3 l;
-	axScalar fX, fY, fZ, fW;
+	double fX, fY, fZ, fW;
 
 	fX = A.m[0][0] * B.x + A.m[1][0] * B.y + A.m[2][0] * B.z + A.m[3][0];
 	fY = A.m[0][1] * B.x + A.m[1][1] * B.y + A.m[2][1] * B.z + A.m[3][1];
@@ -341,14 +341,14 @@ inline vec3 operator * (const vec3 &B, const matrix &A)
 }
 
 // Rotation at origin by angle about unit-vector axis.
-inline void matrix::set_rotation(const vec3& axis, axScalar angle)
+inline void matrix::set_rotation(const vec3& axis, double angle)
 {
-	axScalar c = (axScalar)::cos(angle);
-	axScalar s = (axScalar)::sin(angle);
-	axScalar t = 1.f - c;
-	axScalar x = axis.x;
-	axScalar y = axis.y;
-	axScalar z = axis.z;
+	double c = (double)::cos(angle);
+	double s = (double)::sin(angle);
+	double t = 1.f - c;
+	double x = axis.x;
+	double y = axis.y;
+	double z = axis.z;
 
 	m[0][0] = t*x*x + c;	m[0][1] = t*x*y + s*z;	m[0][2] = t*x*z - s*y;	m[0][3] = 0.f;
 	m[1][0] = t*x*y - s*z;	m[1][1] = t*y*y + c;	m[1][2] = t*y*z + s*x;	m[1][3] = 0.f;
@@ -366,7 +366,7 @@ inline void matrix::set_rotation(const vec3& axis, axScalar angle)
 //
 
 // Calculate the determinent of a 2x2 matrix.
-static inline axScalar det2x2( axScalar a, axScalar b, axScalar c, axScalar d)
+static inline double det2x2( double a, double b, double c, double d)
 {
     return a * d - b * c;
 }
@@ -377,10 +377,10 @@ static inline axScalar det2x2( axScalar a, axScalar b, axScalar c, axScalar d)
 //     | a2,  b2,  c2 |
 //     | a3,  b3,  c3 |
 //
-static inline axScalar det3x3( 
-	axScalar a1, axScalar a2, axScalar a3, 
-	axScalar b1, axScalar b2, axScalar b3, 
-	axScalar c1, axScalar c2, axScalar c3 
+static inline double det3x3( 
+	double a1, double a2, double a3, 
+	double b1, double b2, double b3, 
+	double c1, double c2, double c3 
 ) {
     return (a1 * det2x2( b2, b3, c2, c3 )
 			- b1 * det2x2( a2, a3, c2, c3 )
@@ -388,10 +388,10 @@ static inline axScalar det3x3(
 }
 
 // Calculate the determinent of a 4x4 matrix.
-inline axScalar matrix::det(void)
+inline double matrix::det(void)
 {
-    axScalar ans;
-    axScalar a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
+    double ans;
+    double a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
 
     // assign to individual variable names to aid selecting 
 	// correct elements 
@@ -435,8 +435,8 @@ inline void matrix::adjoint(const matrix &in)
 {
 //	matrix &out = *this;
 
-    axScalar a1, a2, a3, a4, b1, b2, b3, b4;
-    axScalar c1, c2, c3, c4, d1, d2, d3, d4;
+    double a1, a2, a3, a4, b1, b2, b3, b4;
+    double c1, c2, c3, c4, d1, d2, d3, d4;
 
     // assign to individual variable names to aid  
     // selecting correct values  
@@ -504,8 +504,8 @@ bool matrix::invert( const matrix &in )
     //  if the determinent is zero, 
     //  then the inverse matrix is not unique.
 
-    axScalar fDet = det();  //GAPI_DeterminantMatrix( out );
-//    axScalar fDet = out.fDeterminant();  //GAPI_DeterminantMatrix( out );
+    double fDet = det();  //GAPI_DeterminantMatrix( out );
+//    double fDet = out.fDeterminant();  //GAPI_DeterminantMatrix( out );
 
     if (is_zero(fDet)) {
 		return false;

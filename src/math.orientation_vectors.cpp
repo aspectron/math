@@ -1,7 +1,7 @@
-#include "aspect.hpp"
+//#include "aspect.hpp"
 
 
-// #include "math.hpp"
+#include "math.hpp"
 // 
 // /*
 // #include "math.point2d.hpp"
@@ -47,14 +47,14 @@ void orientation_vectors::to_quaternion(quat& q) const
 	{
 		matrix m1, m2;
 		locAxis.normalize();	// Make unit vector
-		axScalar fAngle2 = locY.get_angle(vec3(0.f, 1.f, 0.f));
+		double fAngle2 = locY.get_angle(vec3(0.f, 1.f, 0.f));
 		m.set_identity();
 		m.set_rotation(locAxis, fAngle2);
 		
 		// Rotate the X vector to the X-axis
 		vec3 loc;
 		loc = m * locX;
-		axScalar fAngle = -loc.get_angle(vec3(1.f, 0.f, 0.f));
+		double fAngle = -loc.get_angle(vec3(1.f, 0.f, 0.f));
 		m1.set_identity();
 		m1.set_rot_y(loc.z > 0.f ? fAngle : -fAngle);
 
@@ -67,16 +67,16 @@ void orientation_vectors::to_quaternion(quat& q) const
 		// Cross-product is 0: already on the Y-axis
 		if (locY.y > 0.f)
 		{
-			axScalar fAngle = -locX.get_angle(vec3(1.f, 0.f, 0.f));
+			double fAngle = -locX.get_angle(vec3(1.f, 0.f, 0.f));
 			m.set_rot_y(locX.z > 0.f ? fAngle : -fAngle);
 		}
 		else
 		{
-			static axScalar fPi = (axScalar)::acosf(-1);
+			static double fPi = (double)::acosf(-1);
 			m.set_rot_x(fPi);
 			vec3 loc;
 			loc = m * locX;
-			axScalar fAngle = -loc.get_angle(vec3(1.f, 0.f, 0.f));
+			double fAngle = -loc.get_angle(vec3(1.f, 0.f, 0.f));
 			matrix m1, m2;
 			m1.set_rot_y(loc.z > 0.f ? fAngle : -fAngle);
 			m2.set_rot_x(fPi);

@@ -2,28 +2,30 @@
 #define _MATH_HPP_
 
 #include <math.h>
+#include <stdlib.h>
 
-//#define bASPECT_IS_ZERO(f)   (fabs(f)<GAPI_PRECISION_LIMIT)
+#include "platform.hpp"
 
-// ---
-/*
-#define ASPECT_PI				(3.1415926535f)
-#define ASPECT_TWOPI			(6.283185307f)
-#define ASPECT_HALFPI			(1.570796326794895f)
-#define ASPECT_DEG_TO_RAD		(ASPECT_PI/180.0f)
-#define ASPECT_RAD_TO_DEG		(180.0f/ASPECT_PI)
-#define ASPECT_DegToRad(fDeg)	(((float)fDeg)*ASPECT_DEG_TO_RAD)
-#define ASPECT_RadToDeg(fRad)	(((float)fRad)*ASPECT_RAD_TO_DEG)
-*/
+#if OS(WINDOWS)
+//	#pragma warning ( disable : 4251 )
+#if defined(MATH_EXPORTS)
+#define MATH_API __declspec(dllexport)
+#else
+#define MATH_API __declspec(dllimport)
+#endif
+#elif __GNUC__ >= 4
+# define MATH_API __attribute__((visibility("default")))
+#else
+#define MATH_API // nothing, symbols in a shared library are exported by default
+#endif
 
-typedef float axScalar;
 
 namespace aspect
 {
 	namespace math
 	{
 		const float precision_limit = 0.000001f;
-		inline bool is_zero(axScalar f)   { return ( fabs(f) < precision_limit ); }
+		inline bool is_zero(double f)   { return ( fabs(f) < precision_limit ); }
 
 		// ---
 
@@ -60,12 +62,12 @@ namespace aspect
 	} // math
 } // aspect
 
-// #include "math.vector2.hpp"
-// #include "math.vector3.hpp"
-// #include "math.vector4.hpp"
-// #include "math.matrix.hpp"
-// #include "math.quaternion.hpp"
-// #include "math.euler_angles.hpp"
-// #include "math.orientation_vectors.hpp"
+#include "math.vector2.hpp"
+#include "math.vector3.hpp"
+#include "math.vector4.hpp"
+#include "math.matrix.hpp"
+#include "math.quaternion.hpp"
+#include "math.euler_angles.hpp"
+#include "math.orientation_vectors.hpp"
 
 #endif // _MATH_HPP_

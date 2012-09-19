@@ -15,7 +15,7 @@ namespace math
 class matrix;
 class euler_angles;
 
-class quat
+class MATH_API quat
 {
 	public:
 
@@ -23,10 +23,10 @@ class quat
 		{
 			struct
 			{
-				axScalar x, y, z, w;
+				double x, y, z, w;
 			};
 
-			axScalar v[4];
+			double v[4];
 		};
 
 	public:
@@ -39,25 +39,25 @@ class quat
 		quat(const quat& q)	{ *this = q; }
 		quat(const matrix& m)	{ from_matrix(m); }
 		quat(const euler_angles &ang);
-		quat(axScalar x, axScalar y, axScalar z, axScalar w)
+		quat(double x, double y, double z, double w)
 			: x(x), y(y), z(z), w(w)
 		{
 		}
 
 		// accessors...
 		
-		axScalar	get(ORD ord) const			{ return v[ord]; }
-		void	set(ORD ord, axScalar f)	{ v[ord] = f; }
+		double	get(ORD ord) const			{ return v[ord]; }
+		void	set(ORD ord, double f)	{ v[ord] = f; }
 
 		// operators...
 
 		inline bool operator == (const quat& q) const;
-		operator axScalar*() { return(v); }
+		operator double*() { return(v); }
 
 		// misc functions...
 
 		// Multiply by scalar f. 
-		void scale(axScalar f);
+		void scale(double f);
 
 		// Caculate conjugate of quaternion.
 		void conjugate()	{ v[X]=-v[X]; v[Y]=-v[Y]; v[Z]=-v[Z]; }
@@ -78,7 +78,7 @@ class quat
 		void from_matrix(const matrix &m);
 
 		// Spherical linear interpolation of unit quaternions with spins.  A & B -> this
-		void slerp(axScalar alpha, const quat &a, const quat &b, int spin = 0);
+		void slerp(double alpha, const quat &a, const quat &b, int spin = 0);
 		
 };
 

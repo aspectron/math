@@ -1,4 +1,4 @@
-#include "aspect.hpp"
+#include "math.hpp"
 
 // #include "math.hpp"
 // #include "math.euler_angles.hpp"
@@ -35,7 +35,7 @@ namespace math
 // Construct quaternion from Euler angles (in radians).
 void euler_angles::to_quaternion(quat& q) const
 {
-    axScalar a[3], ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
+    double a[3], ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
     int i,j,k,h,n,s,f;
 	int ord = (int)v[W];
     EulGetOrd(ord,i,j,k,h,n,s,f);
@@ -43,7 +43,7 @@ void euler_angles::to_quaternion(quat& q) const
 	euler_angles ea(*this);
     if (f==euler_angles::EulFrmR) { ea.v[X]=v[Z]; ea.v[Z]=v[X]; }
     if (n==euler_angles::EulParOdd) ea.v[Y] = -v[Y];
-    ti = ea.v[X]*axScalar(0.5); tj = ea.v[Y]*axScalar(0.5); th = ea.v[Z]*axScalar(0.5);
+    ti = ea.v[X]*double(0.5); tj = ea.v[Y]*double(0.5); th = ea.v[Z]*double(0.5);
     ci = cos(ti);  cj = cos(tj);  ch = cos(th);
     si = sin(ti);  sj = sin(tj);  sh = sin(th);
     cc = ci*ch; cs = ci*sh; sc = si*ch; ss = si*sh;
@@ -52,17 +52,17 @@ void euler_angles::to_quaternion(quat& q) const
 		a[i] = cj*(cs + sc);	// Could speed up with 
 		a[j] = sj*(cc + ss);	// trig identities. 
 		a[k] = sj*(cs - sc);
-		q.set(quat::W, (axScalar)(cj*(cc - ss)));
+		q.set(quat::W, (double)(cj*(cc - ss)));
     } else {
 		a[i] = cj*sc - sj*cs;
 		a[j] = cj*ss + sj*cc;
 		a[k] = cj*cs - sj*sc;
-		q.set(quat::W, (axScalar)(cj*cc + sj*ss));
+		q.set(quat::W, (double)(cj*cc + sj*ss));
     }
     if (n==euler_angles::EulParOdd) a[j] = -a[j];
-    q.set(quat::X, (axScalar)a[X]); 
-	q.set(quat::Y, (axScalar)a[Y]); 
-	q.set(quat::Z, (axScalar)a[Z]);
+    q.set(quat::X, (double)a[X]); 
+	q.set(quat::Y, (double)a[Y]); 
+	q.set(quat::Z, (double)a[Z]);
 }
 
 // Convert quaternion to Euler angles (in radians).
@@ -76,7 +76,7 @@ void euler_angles::from_quaternion(const quat& q, ORDER order)
 // Matrix conversion
 void euler_angles::to_matrix(matrix &m) const
 {
-    axScalar ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
+    double ti, tj, th, ci, cj, ch, si, sj, sh, cc, cs, sc, ss;
     int i,j,k,h,n,s,f;
 	int ord = (int)v[W];
     EulGetOrd(ord,i,j,k,h,n,s,f);
@@ -90,15 +90,15 @@ void euler_angles::to_matrix(matrix &m) const
     cc = ci*ch; cs = ci*sh; sc = si*ch; ss = si*sh;
     if (s==euler_angles::EulRepYes) 
 	{
-		m[i][i] = (axScalar)(cj);	  m[i][j] = (axScalar)( sj*si);    m[i][k] = (axScalar)( sj*ci);
-		m[j][i] = (axScalar)(sj*sh);  m[j][j] = (axScalar)(-cj*ss+cc); m[j][k] = (axScalar)(-cj*cs-sc);
-		m[k][i] = (axScalar)(-sj*ch); m[k][j] = (axScalar)( cj*sc+cs); m[k][k] = (axScalar)( cj*cc-ss);
+		m[i][i] = (double)(cj);	  m[i][j] = (double)( sj*si);    m[i][k] = (double)( sj*ci);
+		m[j][i] = (double)(sj*sh);  m[j][j] = (double)(-cj*ss+cc); m[j][k] = (double)(-cj*cs-sc);
+		m[k][i] = (double)(-sj*ch); m[k][j] = (double)( cj*sc+cs); m[k][k] = (double)( cj*cc-ss);
     } 
 	else 
 	{
-		m[i][i] = (axScalar)(cj*ch);  m[i][j] = (axScalar)(sj*sc-cs);  m[i][k] = (axScalar)(sj*cc+ss);
-		m[j][i] = (axScalar)(cj*sh);  m[j][j] = (axScalar)(sj*ss+cc);  m[j][k] = (axScalar)(sj*cs-sc);
-		m[k][i] = (axScalar)(-sj);	  m[k][j] = (axScalar)(cj*si);     m[k][k] = (axScalar)(cj*ci);
+		m[i][i] = (double)(cj*ch);  m[i][j] = (double)(sj*sc-cs);  m[i][k] = (double)(sj*cc+ss);
+		m[j][i] = (double)(cj*sh);  m[j][j] = (double)(sj*ss+cc);  m[j][k] = (double)(sj*cs-sc);
+		m[k][i] = (double)(-sj);	  m[k][j] = (double)(cj*si);     m[k][k] = (double)(cj*ci);
     }
     m[W][X]=m[W][Y]=m[W][Z]=m[X][W]=m[Y][W]=m[Z][W]=0.0; m[W][W]=1.0;
 }
@@ -110,7 +110,7 @@ void euler_angles::from_matrix(const matrix &m, ORDER order)
     EulGetOrd(order,i,j,k,h,n,s,f);
     if (s==euler_angles::EulRepYes) 
 	{
-		axScalar sy = sqrt(m[i][j]*m[i][j] + m[i][k]*m[i][k]);
+		double sy = sqrt(m[i][j]*m[i][j] + m[i][k]*m[i][k]);
 		if (!is_zero(sy)) 
 		{
 			v[X] = (atan2(m[i][j], m[i][k]));
@@ -126,7 +126,7 @@ void euler_angles::from_matrix(const matrix &m, ORDER order)
     } 
 	else 
 	{
-		axScalar cy = sqrt(m[i][i]*m[i][i] + m[j][i]*m[j][i]);
+		double cy = sqrt(m[i][i]*m[i][i] + m[j][i]*m[j][i]);
 		if (!is_zero(cy)) 
 		{
 			v[X] = (atan2(m[k][j], m[k][k]));
@@ -142,8 +142,8 @@ void euler_angles::from_matrix(const matrix &m, ORDER order)
     }
 
     if (n==euler_angles::EulParOdd) {v[X] = -v[X]; v[Y] = - v[Y]; v[Z] = -v[Z];}
-    if (f==euler_angles::EulFrmR) {axScalar t = v[X]; v[X] = v[Z]; v[Z] = t;}
-    v[W] = (axScalar)order;
+    if (f==euler_angles::EulFrmR) {double t = v[X]; v[X] = v[Z]; v[Z] = t;}
+    v[W] = (double)order;
 }
 
 

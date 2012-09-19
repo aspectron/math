@@ -1,4 +1,4 @@
-#include "aspect.hpp"
+#include "math.hpp"
 
 // #include "math.hpp"
 // #include "math.quaternion.hpp"
@@ -31,7 +31,7 @@ void quat::multiply(const quat &qR)
 }
 
 // Multiply by scalar f. 
-void quat::scale(axScalar f)
+void quat::scale(double f)
 {
     v[W] *= f;
     v[X] *= f;
@@ -41,7 +41,7 @@ void quat::scale(axScalar f)
 
 void quat::normalize()
 {
-	axScalar fLength = v[W]*v[W] + v[X]*v[X] + v[Y]*v[Y] + v[Z]*v[Z];
+	double fLength = v[W]*v[W] + v[X]*v[X] + v[Y]*v[Y] + v[Z]*v[Z];
 	if (is_zero(fLength)) 
 	{
 		// Set to unit quaternion
@@ -52,29 +52,29 @@ void quat::normalize()
 	}
  	else 
 	{
-		axScalar f = 1.0 - fLength;
-		if (is_zero(f)) scale(1.0 / (axScalar)::sqrt(fLength));
+		double f = 1.0 - fLength;
+		if (is_zero(f)) scale(1.0 / (double)::sqrt(fLength));
 	}
 }
 
 
 void quat::to_matrix(matrix &m) const
 {
-    axScalar Nq = v[X]*v[X]+v[Y]*v[Y]+v[Z]*v[Z]+v[W]*v[W];
-    axScalar s = (Nq > 0.0) ? (2.0 / Nq) : 0.0;
-    axScalar xs = v[X]*s,	  ys = v[Y]*s,	 zs = v[Z]*s;
-    axScalar wx = v[W]*xs,	  wy = v[W]*ys,	 wz = v[W]*zs;
-    axScalar xx = v[X]*xs,	  xy = v[X]*ys,	 xz = v[X]*zs;
-    axScalar yy = v[Y]*ys,	  yz = v[Y]*zs,	 zz = v[Z]*zs;
-    m[X][X] = (axScalar)(1.0 - (yy + zz)); 
-	m[X][Y] = (axScalar)(xy - wz); 
-	m[X][Z] = (axScalar)(xz + wy);
-    m[Y][X] = (axScalar)(xy + wz); 
-	m[Y][Y] = (axScalar)(1.0 - (xx + zz)); 
-	m[Y][Z] = (axScalar)(yz - wx);
-    m[Z][X] = (axScalar)(xz - wy); 
-	m[Z][Y] = (axScalar)(yz + wx); 
-	m[Z][Z] = (axScalar)(1.0 - (xx + yy));
+    double Nq = v[X]*v[X]+v[Y]*v[Y]+v[Z]*v[Z]+v[W]*v[W];
+    double s = (Nq > 0.0) ? (2.0 / Nq) : 0.0;
+    double xs = v[X]*s,	  ys = v[Y]*s,	 zs = v[Z]*s;
+    double wx = v[W]*xs,	  wy = v[W]*ys,	 wz = v[W]*zs;
+    double xx = v[X]*xs,	  xy = v[X]*ys,	 xz = v[X]*zs;
+    double yy = v[Y]*ys,	  yz = v[Y]*zs,	 zz = v[Z]*zs;
+    m[X][X] = (double)(1.0 - (yy + zz)); 
+	m[X][Y] = (double)(xy - wz); 
+	m[X][Z] = (double)(xz + wy);
+    m[Y][X] = (double)(xy + wz); 
+	m[Y][Y] = (double)(1.0 - (xx + zz)); 
+	m[Y][Z] = (double)(yz - wx);
+    m[Z][X] = (double)(xz - wy); 
+	m[Z][Y] = (double)(yz + wx); 
+	m[Z][Z] = (double)(1.0 - (xx + yy));
     m[W][X]=m[W][Y]=m[W][Z]=m[X][W]=m[Y][W]=m[Z][W]=0.0; m[W][W]=1.0;
 }
 
@@ -89,16 +89,16 @@ void quat::from_matrix(const matrix &m)
     // |w| is greater than 1/2, which is as small as a largest component can be.
     // Otherwise, the largest diagonal entry corresponds to the largest of |x|,
     // |y|, or |z|, one of which must be larger than |w|, and at least 1/2. 
-    axScalar tr, s;
+    double tr, s;
 
     tr = m[X][X] + m[Y][Y]+ m[Z][Z];
     if (tr >= 0.0) {
 	    s = sqrt(tr + m[W][W]);
-	    v[W] = (axScalar)(s*0.5);
-	    s = axScalar(0.5) / s;
-	    v[X] = (axScalar)((m[Z][Y] - m[Y][Z]) * s);
-	    v[Y] = (axScalar)((m[X][Z] - m[Z][X]) * s);
-	    v[Z] = (axScalar)((m[Y][X] - m[X][Y]) * s);
+	    v[W] = (double)(s*0.5);
+	    s = double(0.5) / s;
+	    v[X] = (double)((m[Z][Y] - m[Y][Z]) * s);
+	    v[Y] = (double)((m[X][Z] - m[Z][X]) * s);
+	    v[Z] = (double)((m[Y][X] - m[X][Y]) * s);
 	} else {
 	    int h = X;
 	    if (m[Y][Y] > m[X][X]) h = Y;
@@ -107,11 +107,11 @@ void quat::from_matrix(const matrix &m)
 #define caseMacro(i,j,k,I,J,K) \
 		    case I:\
 				s = sqrt( (m[I][I] - (m[J][J]+m[K][K])) + m[W][W] );\
-				v[i] = (axScalar)(s*axScalar(0.5));\
-				s = axScalar(0.5) / s;\
-				v[j] = (axScalar)(s * (m[I][J] + m[J][I]));\
-				v[k] = (axScalar)(s * (m[K][I] + m[I][K]));\
-				v[W] = (axScalar)(s * (m[K][J] - m[J][K]));\
+				v[i] = (double)(s*double(0.5));\
+				s = double(0.5) / s;\
+				v[j] = (double)(s * (m[I][J] + m[J][I]));\
+				v[k] = (double)(s * (m[K][I] + m[I][K]));\
+				v[W] = (double)(s * (m[K][J] - m[J][K]));\
 				break
 		    caseMacro(X,Y,Z,X,Y,Z);
 		    caseMacro(Y,Z,X,Y,Z,X);
@@ -119,18 +119,18 @@ void quat::from_matrix(const matrix &m)
 #undef caseMacro
 	    }
 	}
-    if (m[W][W] != 1.0) scale((axScalar)(1.0/sqrt(m[W][W])));
+    if (m[W][W] != 1.0) scale((double)(1.0/sqrt(m[W][W])));
 }
 
 // Spherical linear interpolation of unit quaternions with spins.  A & B -> this
-void quat::slerp(axScalar _alpha, const quat &a, const quat &b, int spin)
+void quat::slerp(double _alpha, const quat &a, const quat &b, int spin)
 {
-	axScalar alpha = _alpha; // keep calculations in axScalar type to avoid data loss ?
+	double alpha = _alpha; // keep calculations in double type to avoid data loss ?
 
-	axScalar beta;			// complementary interp parameter 
-	axScalar theta;			// angle between A and B 
-	axScalar sin_t, cos_t;	// sine, cosine of theta 
-	axScalar phi;				// theta plus spins 
+	double beta;			// complementary interp parameter 
+	double theta;			// angle between A and B 
+	double sin_t, cos_t;	// sine, cosine of theta 
+	double phi;				// theta plus spins 
 	bool bflip;				// use negation of B? 
 
 	// cosine theta = dot product of A and B 
@@ -165,10 +165,10 @@ void quat::slerp(axScalar _alpha, const quat &a, const quat &b, int spin)
 		alpha = -alpha;
 
 	// interpolate 
- 	v[X] = (axScalar) (beta*a.v[X] + alpha*b.v[X]);
- 	v[Y] = (axScalar) (beta*a.v[Y] + alpha*b.v[Y]);
- 	v[Z] = (axScalar) (beta*a.v[Z] + alpha*b.v[Z]);
- 	v[W] = (axScalar) (beta*a.v[W] + alpha*b.v[W]);
+ 	v[X] = (double) (beta*a.v[X] + alpha*b.v[X]);
+ 	v[Y] = (double) (beta*a.v[Y] + alpha*b.v[Y]);
+ 	v[Z] = (double) (beta*a.v[Z] + alpha*b.v[Z]);
+ 	v[W] = (double) (beta*a.v[W] + alpha*b.v[W]);
 }
 
 

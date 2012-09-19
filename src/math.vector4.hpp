@@ -10,7 +10,7 @@ namespace aspect
 	namespace math
 	{
 
-		class vec4 // bracket accessor to the matrix row data
+		class MATH_API vec4 // bracket accessor to the matrix row data
 		{
 			public:
 
@@ -18,20 +18,20 @@ namespace aspect
 				{
 					struct
 					{
-						axScalar x, y, z, w;
+						double x, y, z, w;
 					};
 
 					struct
 					{
-						axScalar r, g, b, a;
+						double r, g, b, a;
 					};
 
 					struct
 					{
-						axScalar left, top, width, height;
+						double left, top, width, height;
 					};
 
-					axScalar m[4];
+					double m[4];
 
 				};
 
@@ -42,7 +42,7 @@ namespace aspect
 
 				}
 
-				vec4(axScalar _x, axScalar _y, axScalar _z, axScalar _w)
+				vec4(double _x, double _y, double _z, double _w)
 					: x(_x), y(_y), z(_z), w(_w)
 				{
 
@@ -50,28 +50,28 @@ namespace aspect
 
 				// accessorts and casts...
 
-				axScalar& operator [] (int i) { return (&x)[i]; }     
-				const axScalar& operator [] (int i) const { return (&x)[i]; }  
-				operator axScalar*() { return(&x); }
+				double& operator [] (int i) { return (&x)[i]; }     
+				const double& operator [] (int i) const { return (&x)[i]; }  
+				operator double*() { return(&x); }
 
-				void set(axScalar _x, axScalar _y, axScalar _z, axScalar _w)
+				void set(double _x, double _y, double _z, double _w)
 				{
 					x = _x;  y = _y;  z = _z;  w = _w;
 				}
 
-				void set(const vec3 &src, axScalar _w)
+				void set(const vec3 &src, double _w)
 				{
 					x = src.x; y = src.y; z = src.z; w = _w;
 				}
 
-				inline vec4	operator *  (axScalar f)	const	{ return vec4(x*f, y*f, z*f, w*f); }
-				inline vec4	operator /  (axScalar f)	const	{ return vec4(x/f, y/f, z/f, w/f); }
+				inline vec4	operator *  (double f)	const	{ return vec4(x*f, y*f, z*f, w*f); }
+				inline vec4	operator /  (double f)	const	{ return vec4(x/f, y/f, z/f, w/f); }
 				inline vec4 operator - (const vec4 &src) const { return vec4(x-src.x,y-src.y,z-src.z,w-src.w); }
 				inline vec4 operator + (const vec4 &src) const { return vec4(x+src.x,y+src.y,z+src.z,w+src.w); }
 				inline vec4& operator += (const vec4 &src) { x += src.x; y += src.y; z += src.z; w += src.w; return *this; }
 
-				float right(void) const { return left+width; }
-				float bottom(void) const { return top+height; }
+				double right(void) const { return left+width; }
+				double bottom(void) const { return top+height; }
 		};
 
 		inline bool operator == (vec4 &a, vec4 &b)
