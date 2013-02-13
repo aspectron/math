@@ -236,6 +236,80 @@ void matrix::get_translation( math::vec3 &loc )
 	loc = math::vec3(m_41,m_42,m_43);
 }
 
+void matrix::look_at( const vec3& eye, const vec3& target, const vec3& up )
+{
+
+	// Please note that look_at matrix is already inverted, intended to be combined with viewport.
+
+	//m_eye = eye;
+	set_identity();
+
+	vec3 z = eye - target;
+	z.normalize();
+
+//	z = -z;
+
+	// vec3 view_dir = -z;
+
+	vec3 x; x.cross(up, z);
+	x.normalize();
+
+	vec3 y; y.cross(z, x);
+	y.normalize();
+//	x.normalize();
+
+	m[0][0] = x.x;
+	m[1][0] = x.y;
+	m[2][0] = x.z;
+	//	m[3][0] = -x.dot(eye); //vec::dot(m_xAxis, eye);
+	m[3][0] = x.dot(-eye); //vec::dot(m_xAxis, eye);
+//	m[3][0] = -eye.x; //vec::dot(m_xAxis, eye);
+
+	m[0][1] = y.x;
+	m[1][1] = y.y;
+	m[2][1] = y.z;
+	//m[3][1] = -eye.y; //Vector3::dot(m_yAxis, eye);
+	//m[3][1] = y.dot(eye); //Vector3::dot(m_yAxis, eye);
+	m[3][1] = y.dot(-eye); //Vector3::dot(m_yAxis, eye);
+
+	m[0][2] = z.x;
+	m[1][2] = z.y;
+	m[2][2] = z.z;    
+	//m[3][2] = -eye.z; //Vector3::dot(m_zAxis, eye);
+	m[3][2] = z.dot(-eye); //Vector3::dot(m_zAxis, eye);
+	//m[3][2] = z.dot(eye); //Vector3::dot(m_zAxis, eye);
+
+	/*
+	vec3 x,y,z;
+
+	z = (eye - target).normalize();
+	// z.subVectors( eye, target ).normalize();
+
+	if ( z.length() == 0.0 ) {
+	z.z = 1;
+	}
+
+	// x.crossVectors( up, z ).normalize();
+	x.cross(up,z).normalize();
+
+	if ( x.length() == 0.0 ) {
+
+	z.x += 0.0001;
+	//x.crossVectors( up, z ).normalize();
+	x.cross(up,z).normalize();
+	}
+
+	//	y.crossVectors( z, x );
+	y.cross(z,x);
+
+	set_identity();
+	v[0] = x.x; v[4] = y.x; v[8] = z.x;
+	v[1] = x.y; v[5] = y.y; v[9] = z.y;
+	v[2] = x.z; v[6] = y.z; v[10] = z.z;
+	*/
+}
+
+
 } // math
 
 } // aspect

@@ -141,6 +141,8 @@ class MATH_API matrix
 		bool	invert              (const matrix &src);
 		bool	invert_affine        (const matrix &src);
 
+		void look_at(const vec3& eye, const vec3& target, const vec3& up);
+
 		void	apply_translation	(const vec3 &t);
 		void	apply_rot_x			(double a);
 		void	apply_rot_y			(double a);
@@ -163,6 +165,7 @@ class MATH_API matrix
 		void get_translation(math::vec3 &loc);
 
 		void get_orientation(math::quat &q);
+
 };
 
 
@@ -539,7 +542,6 @@ bool matrix::invert( const matrix &in )
 
 	return true;
 }
-
 
 
 } // math

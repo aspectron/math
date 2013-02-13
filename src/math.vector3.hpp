@@ -83,8 +83,8 @@ namespace aspect
 
 
 				double		dot				(const vec3& loc) const;
-				void		cross			(vec3& locOut, const vec3& loc) const;
-				void		normalize		();
+				vec3&		cross			(const vec3& locA, const vec3& locB);
+				vec3&		normalize		();
 				void		clamp			(double _min, double _max);
 
 				void		from_string(const char *sz);
@@ -207,14 +207,23 @@ namespace aspect
 			return x * loc.x + y * loc.y + z * loc.z;
 		}
 
-		inline void vec3::cross(vec3& locOut, const vec3& loc) const
+// 		inline void vec3::cross(vec3& locOut, const vec3& loc) const
+// 		{
+// 			locOut.x = y * loc.z - z * loc.y;
+// 			locOut.y = z * loc.x - x * loc.z;
+// 			locOut.z = x * loc.y - y * loc.x;
+// 		}
+
+		inline vec3& vec3::cross(const vec3& locA, const vec3& locB)
 		{
-			locOut.x = y * loc.z - z * loc.y;
-			locOut.y = z * loc.x - x * loc.z;
-			locOut.z = x * loc.y - y * loc.x;
+			x = locA.y * locB.z - locA.z * locB.y;
+			y = locA.z * locB.x - locA.x * locB.z;
+			z = locA.x * locB.y - locA.y * locB.x;
+
+			return *this;
 		}
 
-		inline void vec3::normalize()	// Convert to unit-vector
+		inline vec3& vec3::normalize()	// Convert to unit-vector
 		{
 			double f = distance(vec3(0.f, 0.f, 0.f));
 			if (f > 0.0f) 
@@ -229,6 +238,8 @@ namespace aspect
 				y = 0.0f; 
 				z = -1.0f; 
 			}
+
+			return *this;
 		}
 
 		inline void vec3::get_nearest_point_on_line(const vec3 &pt, const vec3 &ptA, const vec3 &ptB)

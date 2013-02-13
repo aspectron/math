@@ -42,7 +42,9 @@ void orientation_vectors::to_quaternion(quat& q) const
 
 	// Rotate the Y vector to the Y-axis
 	vec3 locAxis;
-	locY.cross(locAxis, vec3(0.f, 1.f, 0.f));
+	locAxis.cross(locY,vec3(0.f, 1.f, 0.f));
+//	vec3 locAxis;
+//	locY.cross(locAxis, vec3(0.f, 1.f, 0.f));
 	if (!locAxis.is_zero_length())
 	{
 		matrix m1, m2;
