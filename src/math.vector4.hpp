@@ -83,4 +83,68 @@ namespace aspect
 
 } // aspect
 
+namespace v8pp {
+
+namespace detail {
+
+template<>
+struct from_v8<::aspect::math::vec4>
+{
+	typedef ::aspect::math::vec4 result_type;
+
+	static result_type exec(v8::Handle<v8::Value> value)
+	{
+		v8::HandleScope scope;
+
+		result_type result;
+		if (value->IsArray())
+		{
+			v8::Handle<v8::Array> arr = value.As<v8::Array>();
+		
+			if (arr->Length() != 4)
+			{
+				throw std::invalid_argument("array must contain 4 coordinates");
+			}
+			result.x = v8pp::from_v8<double>(arr->Get(0));
+			result.y = v8pp::from_v8<double>(arr->Get(1));
+			result.z = v8pp::from_v8<double>(arr->Get(2));
+			result.w = v8pp::from_v8<double>(arr->Get(3));
+		}
+		else if (value->IsObject())
+		{
+			v8::Handle<v8::Object> obj = value->ToObject();
+			result.x = v8pp::from_v8<double>(obj->Get(to_v8("x")));
+			result.y = v8pp::from_v8<double>(obj->Get(to_v8("y")));
+			result.z = v8pp::from_v8<double>(obj->Get(to_v8("z")));
+			result.w = v8pp::from_v8<double>(obj->Get(to_v8("w")));
+		}
+		else
+		{
+			throw std::invalid_argument("expecting object(x,y,z,w) or array[4]");
+		}
+		return result;
+	}
+};
+
+template<typename U>
+struct from_v8_ref<::aspect::math::vec4, U> : from_v8<::aspect::math::vec4> {};
+
+} // detail
+
+inline v8::Handle<v8::Value> to_v8(::aspect::math::vec4 const& value)
+{
+	v8::HandleScope scope;
+
+	v8::Handle<v8::Object> obj = v8::Object::New();
+
+	obj->Set(to_v8("x"), to_v8(value.x));
+	obj->Set(to_v8("y"), to_v8(value.y));
+	obj->Set(to_v8("z"), to_v8(value.z));
+	obj->Set(to_v8("w"), to_v8(value.w));
+
+	return scope.Close(obj);
+}
+
+} // v8pp
+
 #endif // __MATH_vec4_HPP__

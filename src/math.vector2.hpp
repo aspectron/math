@@ -16,7 +16,7 @@ class matrix;
 class MATH_API vec2
 {
 
-	public:				
+	public:
 
 		union
 		{
@@ -157,5 +157,63 @@ inline double vec2::get_angle(const vec2& loc) const
 } // math
 
 } // aspect
+
+namespace v8pp {
+
+namespace detail {
+
+template<>
+struct from_v8<::aspect::math::vec2>
+{
+	typedef ::aspect::math::vec2 result_type;
+
+	static result_type exec(v8::Handle<v8::Value> value)
+	{
+		v8::HandleScope scope;
+
+		result_type result;
+		if (value->IsArray())
+		{
+			v8::Handle<v8::Array> arr = value.As<v8::Array>();
+		
+			if (arr->Length() != 3)
+			{
+				throw std::invalid_argument("array must contain 2 coordinates");
+			}
+			result.x = v8pp::from_v8<double>(arr->Get(0));
+			result.y = v8pp::from_v8<double>(arr->Get(1));
+		}
+		else if (value->IsObject())
+		{
+			v8::Handle<v8::Object> obj = value->ToObject();
+			result.x = v8pp::from_v8<double>(obj->Get(to_v8("x")));
+			result.y = v8pp::from_v8<double>(obj->Get(to_v8("y")));
+		}
+		else
+		{
+			throw std::invalid_argument("expecting object(x,y) or array[2]");
+		}
+		return result;
+	}
+};
+
+template<typename U>
+struct from_v8_ref<::aspect::math::vec2, U> : from_v8<::aspect::math::vec2> {};
+
+} // detail
+
+inline v8::Handle<v8::Value> to_v8(::aspect::math::vec2 const& value)
+{
+	v8::HandleScope scope;
+
+	v8::Handle<v8::Object> obj = v8::Object::New();
+
+	obj->Set(to_v8("x"), to_v8(value.x));
+	obj->Set(to_v8("y"), to_v8(value.y));
+
+	return scope.Close(obj);
+}
+
+} // v8pp
 
 #endif // __MATH_vec2_HPP__

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 
 #include "platform.hpp"
+#include "core.hpp"
+#include "v8_core.hpp"
 
 #if OS(WINDOWS)
 //	#pragma warning ( disable : 4251 )
