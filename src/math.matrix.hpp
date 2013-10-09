@@ -9,6 +9,7 @@
 #include "math.vector2.hpp"
 #include "math.vector3.hpp"
 #include "math.vector4.hpp"
+#include "math.quaternion.hpp"
 
 namespace aspect
 {
@@ -163,8 +164,25 @@ class MATH_API matrix
 		}
 
 		void get_translation(math::vec3 &loc);
-
 		void get_orientation(math::quat &q);
+
+		math::vec3 scale() const
+		{
+			return math::vec3(
+				math::vec3(m_11, m_21, m_31).length(),
+				math::vec3(m_12, m_22, m_32).length(),
+				math::vec3(m_13, m_23, m_33).length());
+		}
+
+		math::vec3 translation() const
+		{
+			return math::vec3(m_41, m_42, m_43);
+		}
+
+		math::quat orientation() const
+		{
+			return math::quat(*this);
+		}
 
 };
 

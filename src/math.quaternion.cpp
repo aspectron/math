@@ -78,6 +78,13 @@ void quat::to_matrix(matrix &m) const
     m[W][X]=m[W][Y]=m[W][Z]=m[X][W]=m[Y][W]=m[Z][W]=0.0; m[W][W]=1.0;
 }
 
+matrix quat::to_matrix() const
+{
+	matrix m;
+	to_matrix(m);
+	return m;
+}
+
 // Construct a unit quaternion from rotation matrix.  Assumes matrix is
 // used to multiply column vector on the left: vnew = mat vold.	 Works
 // correctly for right-handed coordinate system and right-handed rotations.

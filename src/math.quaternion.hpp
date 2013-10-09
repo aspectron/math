@@ -75,6 +75,7 @@ class MATH_API quat
 
 		// Matrix conversion
 		void to_matrix(matrix &m) const;
+		matrix to_matrix() const;
 		void from_matrix(const matrix &m);
 
 		// Spherical linear interpolation of unit quaternions with spins.  A & B -> this
