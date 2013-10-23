@@ -290,9 +290,9 @@ namespace v8pp {
 namespace detail {
 
 template<>
-struct from_v8<::aspect::math::vec3>
+struct from_v8<aspect::math::vec3>
 {
-	typedef ::aspect::math::vec3 result_type;
+	typedef aspect::math::vec3 result_type;
 
 	static result_type exec(v8::Handle<v8::Value> value)
 	{
@@ -327,11 +327,11 @@ struct from_v8<::aspect::math::vec3>
 };
 
 template<typename U>
-struct from_v8_ref<::aspect::math::vec3, U> : from_v8<::aspect::math::vec3> {};
+struct from_v8_ref<aspect::math::vec3, U> : from_v8<aspect::math::vec3> {};
 
 } // detail
 
-inline v8::Handle<v8::Value> to_v8(::aspect::math::vec3 const& value)
+inline v8::Handle<v8::Value> to_v8(aspect::math::vec3 const& value)
 {
 	v8::HandleScope scope;
 
