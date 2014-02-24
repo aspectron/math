@@ -131,6 +131,9 @@ struct from_v8_ref<aspect::math::vec4, U> : from_v8<aspect::math::vec4> {};
 
 } // detail
 
+#if !COMPILER(MSVC)
+template<>
+#endif
 inline v8::Handle<v8::Value> to_v8(aspect::math::vec4 const& value)
 {
 	v8::HandleScope scope;
