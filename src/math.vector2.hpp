@@ -160,14 +160,20 @@ inline double vec2::get_angle(const vec2& loc) const
 
 namespace v8pp {
 
-namespace detail {
+using aspect::get_option;
+using aspect::set_option;
 
 template<>
-struct from_v8<aspect::math::vec2>
+struct convert<aspect::math::vec2>
 {
 	typedef aspect::math::vec2 result_type;
 
-	static result_type exec(v8::Handle<v8::Value> value)
+	static bool is_valid(v8::Handle<v8::Value> value)
+	{
+		return value->IsObject();
+	}
+
+	static result_type from_v8(v8::Handle<v8::Value> value)
 	{
 		v8::HandleScope scope;
 
@@ -175,47 +181,40 @@ struct from_v8<aspect::math::vec2>
 		if (value->IsArray())
 		{
 			v8::Handle<v8::Array> arr = value.As<v8::Array>();
-		
-			if (arr->Length() != 3)
+			v8::Handle<v8::Value> x = arr->Get(0), y = arr->Get(1);
+			if (arr->Length() != 2 || !x->IsNumber() || !y->IsNumber())
 			{
-				throw std::invalid_argument("array must contain 2 coordinates");
+				throw std::invalid_argument("expected [x, y] array");
 			}
-			result.x = v8pp::from_v8<double>(arr->Get(0));
-			result.y = v8pp::from_v8<double>(arr->Get(1));
+			result.x = v8pp::from_v8<double>(x);
+			result.y = v8pp::from_v8<double>(y);
 		}
 		else if (value->IsObject())
 		{
 			v8::Handle<v8::Object> obj = value->ToObject();
-			result.x = v8pp::from_v8<double>(obj->Get(to_v8("x")));
-			result.y = v8pp::from_v8<double>(obj->Get(to_v8("y")));
+			if (!get_option(obj, "x", result.x) || !get_option(obj, "y", result.y))
+			{
+				throw std::invalid_argument("expected {x, y} object");
+			}
 		}
 		else
 		{
-			throw std::invalid_argument("expecting object(x,y) or array[2]");
+			throw std::invalid_argument("expected [x, y] array or {x, y} object");
 		}
 		return result;
 	}
+
+	static v8::Handle<v8::Value> to_v8(aspect::math::vec2 const& value)
+	{
+		v8::HandleScope scope;
+
+		v8::Handle<v8::Object> obj = v8::Object::New();
+		set_option(obj, "x", value.x);
+		set_option(obj, "y", value.y);
+
+		return scope.Close(obj);
+	}
 };
-
-template<typename U>
-struct from_v8_ref<aspect::math::vec2, U> : from_v8<aspect::math::vec2> {};
-
-} // detail
-
-#if !COMPILER(MSVC)
-template<>
-#endif
-inline v8::Handle<v8::Value> to_v8(aspect::math::vec2 const& value)
-{
-	v8::HandleScope scope;
-
-	v8::Handle<v8::Object> obj = v8::Object::New();
-
-	obj->Set(to_v8("x"), to_v8(value.x));
-	obj->Set(to_v8("y"), to_v8(value.y));
-
-	return scope.Close(obj);
-}
 
 } // v8pp
 

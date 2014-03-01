@@ -287,14 +287,20 @@ namespace aspect
 
 namespace v8pp {
 
-namespace detail {
+using aspect::get_option;
+using aspect::set_option;
 
 template<>
-struct from_v8<aspect::math::vec3>
+struct convert<aspect::math::vec3>
 {
 	typedef aspect::math::vec3 result_type;
 
-	static result_type exec(v8::Handle<v8::Value> value)
+	static bool is_valid(v8::Handle<v8::Value> value)
+	{
+		return value->IsObject();
+	}
+
+	static result_type from_v8(v8::Handle<v8::Value> value)
 	{
 		v8::HandleScope scope;
 
@@ -302,50 +308,43 @@ struct from_v8<aspect::math::vec3>
 		if (value->IsArray())
 		{
 			v8::Handle<v8::Array> arr = value.As<v8::Array>();
-		
-			if (arr->Length() != 3)
+			v8::Handle<v8::Value> x = arr->Get(0), y = arr->Get(1), z = arr->Get(2);
+			if (arr->Length() != 3 || !x->IsNumber() || !y->IsNumber() || !z->IsNumber())
 			{
-				throw std::invalid_argument("array must contain 3 coordinates");
+				throw std::invalid_argument("expected [x, y, z] array");
 			}
-			result.x = v8pp::from_v8<double>(arr->Get(0));
-			result.y = v8pp::from_v8<double>(arr->Get(1));
-			result.z = v8pp::from_v8<double>(arr->Get(2));
+			result.x = v8pp::from_v8<double>(x);
+			result.y = v8pp::from_v8<double>(y);
+			result.z = v8pp::from_v8<double>(z);
 		}
 		else if (value->IsObject())
 		{
 			v8::Handle<v8::Object> obj = value->ToObject();
-			result.x = v8pp::from_v8<double>(obj->Get(to_v8("x")));
-			result.y = v8pp::from_v8<double>(obj->Get(to_v8("y")));
-			result.z = v8pp::from_v8<double>(obj->Get(to_v8("z")));
+			if (!get_option(obj, "x", result.x) || !get_option(obj, "y", result.y) || !get_option(obj, "z", result.z))
+			{
+				throw std::invalid_argument("expected {x, y, z} object");
+			}
 		}
 		else
 		{
-			throw std::invalid_argument("expecting object(x,y,z) or array[3]");
+			throw std::invalid_argument("expected [x, y, z] array or {x, y, z} object");
 		}
 		return result;
 	}
+
+	static v8::Handle<v8::Value> to_v8(aspect::math::vec3 const& value)
+	{
+		v8::HandleScope scope;
+
+		v8::Handle<v8::Object> obj = v8::Object::New();
+
+		set_option(obj, "x", value.x);
+		set_option(obj, "y", value.y);
+		set_option(obj, "z", value.z);
+
+		return scope.Close(obj);
+	}
 };
-
-template<typename U>
-struct from_v8_ref<aspect::math::vec3, U> : from_v8<aspect::math::vec3> {};
-
-} // detail
-
-#if !COMPILER(MSVC)
-template<>
-#endif
-inline v8::Handle<v8::Value> to_v8(aspect::math::vec3 const& value)
-{
-	v8::HandleScope scope;
-
-	v8::Handle<v8::Object> obj = v8::Object::New();
-
-	obj->Set(to_v8("x"), to_v8(value.x));
-	obj->Set(to_v8("y"), to_v8(value.y));
-	obj->Set(to_v8("z"), to_v8(value.z));
-
-	return scope.Close(obj);
-}
 
 } // v8pp
 
