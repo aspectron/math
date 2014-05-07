@@ -1,1 +1,0 @@
-..\jsx-priv\build\tools\gyp\gyp --depth=. -d all math.gyp
