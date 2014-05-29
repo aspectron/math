@@ -4,7 +4,10 @@
             'target_name': 'math',
             'type': 'shared_library',
             'msvs_guid': 'AF127E22-2727-482C-9C41-4F7575F984DC',
-            'dependencies': ['<(jsx)/sdk/core/core.gyp:core'],
+            'dependencies': [
+                '<(jsx)/sdk/core/core.gyp:core',
+                '<(jsx)/extern/extern.gyp:*',
+            ],
             'direct_dependent_settings': {
                 'include_dirs': ['src'],
             },
