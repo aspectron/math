@@ -93,36 +93,38 @@ struct convert<aspect::math::vec4>
 {
 	typedef aspect::math::vec4 result_type;
 
-	static bool is_valid(v8::Handle<v8::Value> value)
+	static bool is_valid(v8::Isolate*, v8::Handle<v8::Value> value)
 	{
 		return value->IsObject();
 	}
 
-	static result_type from_v8(v8::Handle<v8::Value> value)
+	static result_type from_v8(v8::Isolate* isolate, v8::Handle<v8::Value> value)
 	{
-		v8::HandleScope scope;
+		v8::HandleScope scope(isolate);
 
 		result_type result;
 		if (value->IsArray())
 		{
-			v8::Handle<v8::Array> arr = value.As<v8::Array>();
-			v8::Handle<v8::Value> x = arr->Get(0), y = arr->Get(1);
-			v8::Handle<v8::Value> z = arr->Get(2), w = arr->Get(3);
+			v8::Local<v8::Array> arr = value.As<v8::Array>();
+			v8::Local<v8::Value> x = arr->Get(0), y = arr->Get(1);
+			v8::Local<v8::Value> z = arr->Get(2), w = arr->Get(3);
 			if (arr->Length() != 4 || !x->IsNumber() || !y->IsNumber()
 				|| !z->IsNumber() || !w->IsNumber())
 			{
 				throw std::invalid_argument("expected [x, y, z, w] array");
 			}
-			result.x = v8pp::from_v8<double>(x);
-			result.y = v8pp::from_v8<double>(y);
-			result.z = v8pp::from_v8<double>(z);
-			result.w = v8pp::from_v8<double>(w);
+			result.x = v8pp::from_v8<double>(isolate, x);
+			result.y = v8pp::from_v8<double>(isolate, y);
+			result.z = v8pp::from_v8<double>(isolate, z);
+			result.w = v8pp::from_v8<double>(isolate, w);
 		}
 		else if (value->IsObject())
 		{
-			v8::Handle<v8::Object> obj = value->ToObject();
-			if (!get_option(obj, "x", result.x) || !get_option(obj, "y", result.y)
-				|| !get_option(obj, "z", result.z) || !get_option(obj, "w", result.w))
+			v8::Local<v8::Object> obj = value->ToObject();
+			if (!get_option(isolate, obj, "x", result.x)
+				|| !get_option(isolate, obj, "y", result.y)
+				|| !get_option(isolate, obj, "z", result.z)
+				|| !get_option(isolate, obj, "w", result.w))
 			{
 				throw std::invalid_argument("expected {x, y, z, w} object");
 			}
@@ -134,18 +136,18 @@ struct convert<aspect::math::vec4>
 		return result;
 	}
 
-	static v8::Handle<v8::Value> to_v8(aspect::math::vec4 const& value)
+	static v8::Handle<v8::Value> to_v8(v8::Isolate* isolate, aspect::math::vec4 const& value)
 	{
-		v8::HandleScope scope;
+		v8::EscapableHandleScope scope(isolate);
 
-		v8::Handle<v8::Object> obj = v8::Object::New();
+		v8::Local<v8::Object> obj = v8::Object::New(isolate);
 
-		set_option(obj, "x", value.x);
-		set_option(obj, "y", value.y);
-		set_option(obj, "z", value.z);
-		set_option(obj, "w", value.w);
+		set_option(isolate, obj, "x", value.x);
+		set_option(isolate, obj, "y", value.y);
+		set_option(isolate, obj, "z", value.z);
+		set_option(isolate, obj, "w", value.w);
 
-		return scope.Close(obj);
+		return scope.Escape(obj);
 	}
 };
 
