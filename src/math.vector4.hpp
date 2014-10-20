@@ -3,6 +3,7 @@
 #define __MATH_vec4_HPP__
 
 #include "math.hpp"
+#include "math.vector3.hpp"
 
 namespace aspect
 {

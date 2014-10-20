@@ -87,9 +87,6 @@ namespace aspect
 				vec3&		normalize		();
 				void		clamp			(double _min, double _max);
 
-				void		from_string(const char *sz);
-				void		to_string(char *sz, int iMaxLen);
-
 				// color operations
 
 				/*
@@ -256,31 +253,6 @@ namespace aspect
 			y = y < fMin ? fMin : y > fMax ? fMax : y;
 			z = z < fMin ? fMin : z > fMax ? fMax : z;
 		}
-
-
-		//GAPI_MATH GAPI_Matrix operator * (const GAPI_Matrix &A, const GAPI_Matrix &B);
-		//GAPI_MATH vec3 operator * (const GAPI_Matrix &A, const vec3 &B);
-		//inline vec3 operator * (const vec3 &B, const GAPI_Matrix &A) { return operator *(A,B); }
-
-		inline void vec3::from_string(const char *sz)
-		{
-		//	sscanf_s(sz,"%f,%f,%f",&x,&y,&z);
-		}
-
-		inline void vec3::to_string(char *szDest, int iMaxLen)
-		{
-		//	sprintf_s(szDest,iMaxLen,"%f,%f,%f",x,y,z);
-		}
-
-		/*
-		inline vec2& operator = (vec2 &Dst, const vec3 &Src)
-		{
-			Dst.x = Src.x;
-			Dst.y = Src.y;
-			return Dst;
-		}
-		*/
-
 	} // math
 
 } // aspect
