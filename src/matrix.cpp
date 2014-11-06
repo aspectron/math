@@ -1,45 +1,15 @@
-#include "math.hpp"
-// #include "math.hpp"
-// 
-// 
-// //#include "math.point2d.hpp"
-// //#include "math.vec3.hpp"
-// //#include "math.point4d.hpp"
-// #include "math.matrix.hpp"
-// #include "math.quaternion.hpp"
-// #include "math.euler_angles.hpp"
+#include "math/math.hpp"
+#include "math/matrix.hpp"
 
-
-namespace aspect
-{
-
-namespace math
-{
-
+namespace aspect { namespace math {
 
 double matrix::ms_identity[16] = 
 {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f,
 };
-
-
-
-matrix::matrix(const quat &Q)
-{
-	set_identity();
-	set_orientation(Q);
-}
-
-matrix::matrix(const euler_angles &ang)
-{
-	set_identity();
-	set_orientation(ang);
-}
-
-
 
 void matrix::set_orientation(const quat &quat)
 {
@@ -170,60 +140,60 @@ bool matrix::invert_affine(const matrix &in)
 {
 	matrix &out = *this;
 
-    double    det_1;
-    double    pos, neg, temp;
+	double    det_1;
+	double    pos, neg, temp;
 
-    //
-    // Calculate the determinant of submatrix A and determine if the
-    // the matrix is singular as limited by the double precision
-    // doubleing-point data representation.
-    //
-    pos = neg = 0.0;
-    temp =  in[0][0] * in[1][1] * in[2][2];
-    if (temp >= 0.0) pos += temp; else neg += temp;
-    temp =  in[0][1] * in[1][2] * in[2][0];
-    if (temp >= 0.0) pos += temp; else neg += temp;
-    temp =  in[0][2] * in[1][0] * in[2][1];
-    if (temp >= 0.0) pos += temp; else neg += temp;
-    temp = -in[0][2] * in[1][1] * in[2][0];
-    if (temp >= 0.0) pos += temp; else neg += temp;
-    temp = -in[0][1] * in[1][0] * in[2][2];
-    if (temp >= 0.0) pos += temp; else neg += temp;
-    temp = -in[0][0] * in[1][2] * in[2][1];
-    if (temp >= 0.0) pos += temp; else neg += temp;
-    det_1 = pos + neg;
+	//
+	// Calculate the determinant of submatrix A and determine if the
+	// the matrix is singular as limited by the double precision
+	// doubleing-point data representation.
+	//
+	pos = neg = 0.0;
+	temp =  in[0][0] * in[1][1] * in[2][2];
+	if (temp >= 0.0) pos += temp; else neg += temp;
+	temp =  in[0][1] * in[1][2] * in[2][0];
+	if (temp >= 0.0) pos += temp; else neg += temp;
+	temp =  in[0][2] * in[1][0] * in[2][1];
+	if (temp >= 0.0) pos += temp; else neg += temp;
+	temp = -in[0][2] * in[1][1] * in[2][0];
+	if (temp >= 0.0) pos += temp; else neg += temp;
+	temp = -in[0][1] * in[1][0] * in[2][2];
+	if (temp >= 0.0) pos += temp; else neg += temp;
+	temp = -in[0][0] * in[1][2] * in[2][1];
+	if (temp >= 0.0) pos += temp; else neg += temp;
+	det_1 = pos + neg;
 
-    // Is the submatrix A singular? 
+	// Is the submatrix A singular? 
 	double f = det_1 / (pos - neg);
-    if (is_zero(det_1) || is_zero(f)) {
-        // Matrix M has no inverse 
-        return false;
-    }
+	if (is_zero(det_1) || is_zero(f)) {
+		// Matrix M has no inverse 
+		return false;
+	}
 
-    // Calculate inverse(A) = adj(A) / det(A) 
-    det_1 = (double)1.0 / det_1;
-    out[0][0] =   ( in[1][1] * in[2][2] - in[1][2] * in[2][1] ) * det_1;
-    out[1][0] = - ( in[1][0] * in[2][2] - in[1][2] * in[2][0] ) * det_1;
-    out[2][0] =   ( in[1][0] * in[2][1] - in[1][1] * in[2][0] ) * det_1;
-    out[0][1] = - ( in[0][1] * in[2][2] - in[0][2] * in[2][1] ) * det_1;
-    out[1][1] =   ( in[0][0] * in[2][2] - in[0][2] * in[2][0] ) * det_1;
-    out[2][1] = - ( in[0][0] * in[2][1] - in[0][1] * in[2][0] ) * det_1;
-    out[0][2] =   ( in[0][1] * in[1][2] - in[0][2] * in[1][1] ) * det_1;
-    out[1][2] = - ( in[0][0] * in[1][2] - in[0][2] * in[1][0] ) * det_1;
-    out[2][2] =   ( in[0][0] * in[1][1] - in[0][1] * in[1][0] ) * det_1;
+	// Calculate inverse(A) = adj(A) / det(A) 
+	det_1 = (double)1.0 / det_1;
+	out[0][0] =   ( in[1][1] * in[2][2] - in[1][2] * in[2][1] ) * det_1;
+	out[1][0] = - ( in[1][0] * in[2][2] - in[1][2] * in[2][0] ) * det_1;
+	out[2][0] =   ( in[1][0] * in[2][1] - in[1][1] * in[2][0] ) * det_1;
+	out[0][1] = - ( in[0][1] * in[2][2] - in[0][2] * in[2][1] ) * det_1;
+	out[1][1] =   ( in[0][0] * in[2][2] - in[0][2] * in[2][0] ) * det_1;
+	out[2][1] = - ( in[0][0] * in[2][1] - in[0][1] * in[2][0] ) * det_1;
+	out[0][2] =   ( in[0][1] * in[1][2] - in[0][2] * in[1][1] ) * det_1;
+	out[1][2] = - ( in[0][0] * in[1][2] - in[0][2] * in[1][0] ) * det_1;
+	out[2][2] =   ( in[0][0] * in[1][1] - in[0][1] * in[1][0] ) * det_1;
 
-    // Calculate -C * inverse(A) 
-    out[3][0] = - ( in[3][0] * out[0][0] + in[3][1] * out[1][0] + in[3][2] * out[2][0] );
-    out[3][1] = - ( in[3][0] * out[0][1] + in[3][1] * out[1][1] + in[3][2] * out[2][1] );
-    out[3][2] = - ( in[3][0] * out[0][2] + in[3][1] * out[1][2] + in[3][2] * out[2][2] );
+	// Calculate -C * inverse(A) 
+	out[3][0] = - ( in[3][0] * out[0][0] + in[3][1] * out[1][0] + in[3][2] * out[2][0] );
+	out[3][1] = - ( in[3][0] * out[0][1] + in[3][1] * out[1][1] + in[3][2] * out[2][1] );
+	out[3][2] = - ( in[3][0] * out[0][2] + in[3][1] * out[1][2] + in[3][2] * out[2][2] );
 
-    // Fill in last column 
-    out[0][3] = out[1][3] = out[2][3] = 0.0;
-    out[3][3] = 1.0;
+	// Fill in last column 
+	out[0][3] = out[1][3] = out[2][3] = 0.0;
+	out[3][3] = 1.0;
 
-//	in = out;
+	//	in = out;
 
-    return true;
+	return true;
 }
 
 void matrix::get_orientation( math::quat &q )
@@ -309,7 +279,4 @@ void matrix::look_at( const vec3& eye, const vec3& target, const vec3& up )
 	*/
 }
 
-
-} // math
-
-} // aspect
+}} // aspect::math

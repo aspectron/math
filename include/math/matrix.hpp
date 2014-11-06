@@ -1,32 +1,22 @@
-#pragma once
-#ifndef __MATH_MATRIX_HPP__
-#define __MATH_MATRIX_HPP__
+#ifndef MATH_MATRIX_HPP_INCLUDED
+#define MATH_MATRIX_HPP_INCLUDED
 
-//#include <emmintrin.h>
-#include <string.h>
+#include "math/math.hpp"
+#include "math/vector2.hpp"
+#include "math/vector3.hpp"
+#include "math/vector4.hpp"
+#include "math/quaternion.hpp"
 
-#include "math.hpp"
-#include "math.vector2.hpp"
-#include "math.vector3.hpp"
-#include "math.vector4.hpp"
-#include "math.quaternion.hpp"
-
-namespace aspect
-{
-
-namespace math
-{
+namespace aspect { namespace math {
 
 class quat;
 class euler_angles;
 
-class MATH_API matrix_row
+struct MATH_API matrix_row
 {
-	public:
-
-		double v[4];
-
-		inline double& operator[] (int i) { return v[i]; }
+	double v[4];
+	double& operator[] (int i) { return v[i]; }
+	double operator[] (int i) const { return v[i]; }
 };
 
 #if CPU(X64) && OS(WINDOWS)
@@ -35,161 +25,150 @@ class MATH_API __declspec(align(16)) matrix
 class MATH_API matrix
 #endif
 {
-	public:
-
-		
-		union
-		{
+public:
+	union
+	{
 /*
-			struct
-			{
-				__m128	m1;
-				__m128	m2;
-				__m128	m3;
-				__m128	m4;
-			};
+		struct
+		{
+			__m128	m1;
+			__m128	m2;
+			__m128	m3;
+			__m128	m4;
+		};
 */
-			struct 
-			{
-				double m_11, m_12, m_13, m_14;
-				double m_21, m_22, m_23, m_24;
-				double m_31, m_32, m_33, m_34;
-				double m_41, m_42, m_43, m_44;
-			};
-
-			double m[4][4];
-
-			matrix_row m_row[4];
-
-			double v[16];
+		struct
+		{
+			double m_11, m_12, m_13, m_14;
+			double m_21, m_22, m_23, m_24;
+			double m_31, m_32, m_33, m_34;
+			double m_41, m_42, m_43, m_44;
 		};
 
-	public:
+		double m[4][4];
 
-//		static matrix ms_Identity;
-		static double ms_identity[16];
+		matrix_row m_row[4];
 
-		// constructors...
+		double v[16];
+	};
 
-		matrix()
-		{
-		}
+public:
 
-		matrix(const matrix &Src)
-		{
-			::memcpy(m,Src.m,sizeof(m));
-		}
+	static double ms_identity[16];
 
-		matrix(  const double f11, const double f12, const double f13, const double f14,
-					const double f21, const double f22, const double f23, const double f24,
-					const double f31, const double f32, const double f33, const double f34,
-					const double f41, const double f42, const double f43, const double f44)
-			: m_11(f11), m_12(f12), m_13(f13), m_14(f14), 
-			  m_21(f21), m_22(f22), m_23(f23), m_24(f24), 
-			  m_31(f31), m_32(f32), m_33(f33), m_34(f34), 
-			  m_41(f41), m_42(f42), m_43(f43), m_44(f44)			  
-		{
-		}
+	// constructors...
+
+	matrix() {}
+
+	matrix(const double f11, const double f12, const double f13, const double f14,
+				const double f21, const double f22, const double f23, const double f24,
+				const double f31, const double f32, const double f33, const double f34,
+				const double f41, const double f42, const double f43, const double f44)
+		: m_11(f11), m_12(f12), m_13(f13), m_14(f14),
+			m_21(f21), m_22(f22), m_23(f23), m_24(f24),
+			m_31(f31), m_32(f32), m_33(f33), m_34(f34),
+			m_41(f41), m_42(f42), m_43(f43), m_44(f44)
+	{
+	}
 
 /*		matrix( const __m128 &ms1, const __m128 &ms2, const __m128 &ms3, const __m128 &ms4)
-			: m1(ms1), m2(ms2), m3(ms3), m4(ms4)
-		{
-		}
+		: m1(ms1), m2(ms2), m3(ms3), m4(ms4)
+	{
+	}
 */
-		matrix(const quat &Q);
+	explicit matrix(const quat &Q)
+	{
+		set_identity();
+		set_orientation(Q);
+	}
 
-		matrix(const euler_angles &ang);
+	explicit matrix(const euler_angles &ang)
+	{
+		set_identity();
+		set_orientation(ang);
+	}
 
-		// initializers...
-
-		inline void set_identity(void)
-		{
-			memcpy(&(m[0][0]),ms_identity,sizeof(ms_identity));
+	// initializers...
+	void set_identity()
+	{
+		memcpy(&(m[0][0]),ms_identity,sizeof(ms_identity));
 //			m_12 = m_13 = m_14 = m_21 = m_23 = m_24 = 
 //			m_31 = m_32 = m_34 = m_41 = m_42 = m_43 = 0.0f;
 //			m_11 = m_22 = m_33 = m_44 = 1.0f;
-		}
+	}
 
-		void zero(void) { ::memset(this,0,sizeof(matrix)); }
+	void zero() { ::memset(this,0,sizeof(matrix)); }
  
-		// accessors and casts...
+	// accessors and casts...
+	double & operator () (int x, int y) { return m[x][y]; }
+	double * operator [] (int i) { return m[i]; }
+	const vec4& operator [] (int i) const { return((vec4&)(*m[i])); }
 
-				double &		operator () (int x, int y)	{ return m[x][y]; }
-				double *		operator [] (int i)			{ return m[i]; }  
-		const	vec4&		operator [] (int i) const { return((vec4&)(*m[i])); }
+	// operators...
+	matrix & operator *= (const matrix &M);//	{ *this = (*this) * (M); return *this; }
 
-		// operators...
+	double& at(int i) { return v[i]; }
 
-		matrix & operator *= (const matrix &M);//	{ *this = (*this) * (M); return *this; }
-
-		double& at(int i) { return v[i]; }
-
-		// ---
+	// ---
+	void set_translation(const vec3 &Dist);
+	void set_scale(const vec3 &Scale);
+	void set_rot_x(double fAngle);
+	void set_rot_y(double fAngle);
+	void set_rot_z(double fAngle);
+	void set_rotation(const vec3& axis, double angle);
+	void set_orientation(const quat &quat);
+	void set_orientation(const euler_angles &ang);
 		
-		void set_translation			(const vec3 &Dist);
-		void set_scale				(const vec3 &Scale);
-		void set_rot_x                (double fAngle);
-		void set_rot_y                (double fAngle);
-		void set_rot_z                (double fAngle);
-		void set_rotation			(const vec3& axis, double angle);
-		void set_orientation			(const quat &quat);
-		
-		inline void set_orientation			(const euler_angles &ang);
-		
-		double	det					(void);
-		void	adjoint				(const matrix& in);
+	double det();
+	void adjoint(const matrix& in);
 
-		bool	invert              (const matrix &src);
-		bool	invert_affine        (const matrix &src);
+	bool invert(const matrix &src);
+	bool invert_affine(const matrix &src);
 
-		void look_at(const vec3& eye, const vec3& target, const vec3& up);
+	void look_at(const vec3& eye, const vec3& target, const vec3& up);
 
-		void	apply_translation	(const vec3 &t);
-		void	apply_rot_x			(double a);
-		void	apply_rot_y			(double a);
-		void	apply_rot_z			(double a);
-		void	apply_scale			(const vec3& scale);
-		void	apply_orientation	(const quat &quat);
+	void apply_translation(const vec3 &t);
+	void apply_rot_x(double a);
+	void apply_rot_y(double a);
+	void apply_rot_z(double a);
+	void apply_scale(const vec3& scale);
+	void apply_orientation(const quat &quat);
 
-		void pre_translate(const math::vec3 &src);
+	void pre_translate(const math::vec3 &src);
 
+//	void get_location(math::vec3 &loc) { loc = math::vec3(0.0f,0.0f,0.0f); return *this * loc; }
 
-//		void get_location(math::vec3 &loc) { loc = math::vec3(0.0f,0.0f,0.0f); return *this * loc; }
+	void get_scale(math::vec3 &scale)
+	{
+		scale.x = math::vec3(m_11,m_21,m_31).length();
+		scale.y = math::vec3(m_12,m_22,m_32).length();
+		scale.z = math::vec3(m_13,m_23,m_33).length();
+	}
 
-		void get_scale(math::vec3 &scale)
-		{
-			scale.x = math::vec3(m_11,m_21,m_31).length();
-			scale.y = math::vec3(m_12,m_22,m_32).length();
-			scale.z = math::vec3(m_13,m_23,m_33).length();
-		}
+	void get_translation(math::vec3 &loc);
+	void get_orientation(math::quat &q);
 
-		void get_translation(math::vec3 &loc);
-		void get_orientation(math::quat &q);
+	math::vec3 scale() const
+	{
+		return math::vec3(
+			math::vec3(m_11, m_21, m_31).length(),
+			math::vec3(m_12, m_22, m_32).length(),
+			math::vec3(m_13, m_23, m_33).length());
+	}
 
-		math::vec3 scale() const
-		{
-			return math::vec3(
-				math::vec3(m_11, m_21, m_31).length(),
-				math::vec3(m_12, m_22, m_32).length(),
-				math::vec3(m_13, m_23, m_33).length());
-		}
+	math::vec3 translation() const
+	{
+		return math::vec3(m_41, m_42, m_43);
+	}
 
-		math::vec3 translation() const
-		{
-			return math::vec3(m_41, m_42, m_43);
-		}
-
-		math::quat orientation() const
-		{
-			return math::quat(*this);
-		}
-
+	math::quat orientation() const
+	{
+		return math::quat(*this);
+	}
 };
 
-
-
-inline 
-//__forceinline 
+inline
+//__forceinline
 matrix operator * (const matrix &A, const matrix &B)
 {
 /*
@@ -228,7 +207,6 @@ matrix operator * (const matrix &A, const matrix &B)
 	);
 }
 
-
 inline
 //__forceinline 
 matrix &matrix::operator *= (const matrix &Src)
@@ -248,7 +226,6 @@ matrix &matrix::operator *= (const matrix &Src)
 	*this = (*this) * (Src); 
 	return *this;
 }
-
 
 inline void matrix::set_translation(const vec3 &Dist)
 {
@@ -379,7 +356,6 @@ inline void matrix::set_rotation(const vec3& axis, double angle)
 
 
 
-
 //============================================================================
 // Matrix Inversion
 // by Richard Carling
@@ -389,7 +365,7 @@ inline void matrix::set_rotation(const vec3& axis, double angle)
 // Calculate the determinent of a 2x2 matrix.
 static inline double det2x2( double a, double b, double c, double d)
 {
-    return a * d - b * c;
+	return a * d - b * c;
 }
 
 // calculate the determinent of a 3x3 matrix in the form
@@ -403,7 +379,7 @@ static inline double det3x3(
 	double b1, double b2, double b3, 
 	double c1, double c2, double c3 
 ) {
-    return (a1 * det2x2( b2, b3, c2, c3 )
+	return (a1 * det2x2( b2, b3, c2, c3 )
 			- b1 * det2x2( a2, a3, c2, c3 )
 			+ c1 * det2x2( a2, a3, b2, b3 ));
 }
@@ -411,10 +387,10 @@ static inline double det3x3(
 // Calculate the determinent of a 4x4 matrix.
 inline double matrix::det(void)
 {
-    double ans;
-    double a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
+	double ans;
+	double a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4;
 
-    // assign to individual variable names to aid selecting 
+	// assign to individual variable names to aid selecting 
 	// correct elements 
 
 	a1 = m[0][0]; b1 = m[0][1]; 
@@ -429,12 +405,12 @@ inline double matrix::det(void)
 	a4 = m[3][0]; b4 = m[3][1]; 
 	c4 = m[3][2]; d4 = m[3][3];
 
-    ans = a1 * det3x3( b2, b3, b4, c2, c3, c4, d2, d3, d4)
-        - b1 * det3x3( a2, a3, a4, c2, c3, c4, d2, d3, d4)
-        + c1 * det3x3( a2, a3, a4, b2, b3, b4, d2, d3, d4)
-        - d1 * det3x3( a2, a3, a4, b2, b3, b4, c2, c3, c4);
+	ans = a1 * det3x3( b2, b3, b4, c2, c3, c4, d2, d3, d4)
+		- b1 * det3x3( a2, a3, a4, c2, c3, c4, d2, d3, d4)
+		+ c1 * det3x3( a2, a3, a4, b2, b3, b4, d2, d3, d4)
+		- d1 * det3x3( a2, a3, a4, b2, b3, b4, c2, c3, c4);
 
-    return ans;
+	return ans;
 }
 
 // 
@@ -456,11 +432,11 @@ inline void matrix::adjoint(const matrix &in)
 {
 //	matrix &out = *this;
 
-    double a1, a2, a3, a4, b1, b2, b3, b4;
-    double c1, c2, c3, c4, d1, d2, d3, d4;
+	double a1, a2, a3, a4, b1, b2, b3, b4;
+	double c1, c2, c3, c4, d1, d2, d3, d4;
 
-    // assign to individual variable names to aid  
-    // selecting correct values  
+	// assign to individual variable names to aid  
+	// selecting correct values  
 
 	a1 = in[0][0]; b1 = in[0][1]; 
 	c1 = in[0][2]; d1 = in[0][3];
@@ -474,27 +450,27 @@ inline void matrix::adjoint(const matrix &in)
 	a4 = in[3][0]; b4 = in[3][1]; 
 	c4 = in[3][2]; d4 = in[3][3];
 
-    // row column labeling reversed since we transpose rows & columns 
+	// row column labeling reversed since we transpose rows & columns 
 
-    m[0][0]  =   det3x3( b2, b3, b4, c2, c3, c4, d2, d3, d4);
-    m[1][0]  = - det3x3( a2, a3, a4, c2, c3, c4, d2, d3, d4);
-    m[2][0]  =   det3x3( a2, a3, a4, b2, b3, b4, d2, d3, d4);
-    m[3][0]  = - det3x3( a2, a3, a4, b2, b3, b4, c2, c3, c4);
-        
-    m[0][1]  = - det3x3( b1, b3, b4, c1, c3, c4, d1, d3, d4);
-    m[1][1]  =   det3x3( a1, a3, a4, c1, c3, c4, d1, d3, d4);
-    m[2][1]  = - det3x3( a1, a3, a4, b1, b3, b4, d1, d3, d4);
-    m[3][1]  =   det3x3( a1, a3, a4, b1, b3, b4, c1, c3, c4);
-        
-    m[0][2]  =   det3x3( b1, b2, b4, c1, c2, c4, d1, d2, d4);
-    m[1][2]  = - det3x3( a1, a2, a4, c1, c2, c4, d1, d2, d4);
-    m[2][2]  =   det3x3( a1, a2, a4, b1, b2, b4, d1, d2, d4);
-    m[3][2]  = - det3x3( a1, a2, a4, b1, b2, b4, c1, c2, c4);
-        
-    m[0][3]  = - det3x3( b1, b2, b3, c1, c2, c3, d1, d2, d3);
-    m[1][3]  =   det3x3( a1, a2, a3, c1, c2, c3, d1, d2, d3);
-    m[2][3]  = - det3x3( a1, a2, a3, b1, b2, b3, d1, d2, d3);
-    m[3][3]  =   det3x3( a1, a2, a3, b1, b2, b3, c1, c2, c3);
+	m[0][0]  =   det3x3( b2, b3, b4, c2, c3, c4, d2, d3, d4);
+	m[1][0]  = - det3x3( a2, a3, a4, c2, c3, c4, d2, d3, d4);
+	m[2][0]  =   det3x3( a2, a3, a4, b2, b3, b4, d2, d3, d4);
+	m[3][0]  = - det3x3( a2, a3, a4, b2, b3, b4, c2, c3, c4);
+
+	m[0][1]  = - det3x3( b1, b3, b4, c1, c3, c4, d1, d3, d4);
+	m[1][1]  =   det3x3( a1, a3, a4, c1, c3, c4, d1, d3, d4);
+	m[2][1]  = - det3x3( a1, a3, a4, b1, b3, b4, d1, d3, d4);
+	m[3][1]  =   det3x3( a1, a3, a4, b1, b3, b4, c1, c3, c4);
+
+	m[0][2]  =   det3x3( b1, b2, b4, c1, c2, c4, d1, d2, d4);
+	m[1][2]  = - det3x3( a1, a2, a4, c1, c2, c4, d1, d2, d4);
+	m[2][2]  =   det3x3( a1, a2, a4, b1, b2, b4, d1, d2, d4);
+	m[3][2]  = - det3x3( a1, a2, a4, b1, b2, b4, c1, c2, c4);
+
+	m[0][3]  = - det3x3( b1, b2, b3, c1, c2, c3, d1, d2, d3);
+	m[1][3]  =   det3x3( a1, a2, a3, c1, c2, c3, d1, d2, d3);
+	m[2][3]  = - det3x3( a1, a2, a3, b1, b2, b3, d1, d2, d3);
+	m[3][3]  =   det3x3( a1, a2, a3, b1, b2, b3, c1, c2, c3);
 }
 
 
@@ -514,25 +490,25 @@ bool matrix::invert( const matrix &in )
 
 //    int i, j;
 
-    // calculate the adjoint matrix 
+	// calculate the adjoint matrix 
 
 	//out.
 	adjoint(in);
 
 //    GAPI_AdjointMatrix( out, in );
 
-    //  calculate the 4x4 determinent
-    //  if the determinent is zero, 
-    //  then the inverse matrix is not unique.
+	//  calculate the 4x4 determinent
+	//  if the determinent is zero, 
+	//  then the inverse matrix is not unique.
 
-    double fDet = det();  //GAPI_DeterminantMatrix( out );
-//    double fDet = out.fDeterminant();  //GAPI_DeterminantMatrix( out );
+	double fDet = det();  //GAPI_DeterminantMatrix( out );
+	//    double fDet = out.fDeterminant();  //GAPI_DeterminantMatrix( out );
 
-    if (is_zero(fDet)) {
+	if (is_zero(fDet)) {
 		return false;
-    }
+	}
 
-    // scale the adjoint matrix to get the inverse 
+	// scale the adjoint matrix to get the inverse 
 
 //    for (i=0; i<4; i++)
 //        for(j=0; j<4; j++)
@@ -562,8 +538,6 @@ bool matrix::invert( const matrix &in )
 }
 
 
-} // math
+}} // aspect::math
 
-} // aspect
-
-#endif // __MATH_MATRIX_HPP__
+#endif // MATH_MATRIX_HPP_INCLUDED

@@ -1,28 +1,8 @@
-//#include "aspect.hpp"
+#include "math/math.hpp"
+#include "math/orientation_vectors.hpp"
 
+namespace aspect { namespace math {
 
-#include "math.hpp"
-// 
-// /*
-// #include "math.point2d.hpp"
-// #include "math.vec3.hpp"
-// #include "math.point4d.hpp"
-// */
-// 
-// #include "math.orientation_vectors.hpp"
-// #include "math.quaternion.hpp"
-// #include "math.matrix.hpp"
-
-namespace aspect
-{
-
-namespace math
-{
-
-
-//============================================================================
-// Orientation Vectors
-//
 void orientation_vectors::from_quaternion(const quat& q)
 {
 	matrix m;
@@ -32,6 +12,7 @@ void orientation_vectors::from_quaternion(const quat& q)
 	m_locX = m * vec3(1.f, 0.f, 0.f);
 	m_locY = m * vec3(0.f, 1.f, 0.f);
 }
+
 void orientation_vectors::to_quaternion(quat& q) const
 {
 	// Displace to the origin
@@ -87,8 +68,6 @@ void orientation_vectors::to_quaternion(quat& q) const
 	}
 	q.from_matrix(m);
 	q.normalize();
-
-  
 }
 
 void orientation_vectors::apply_matrix(matrix &m)
@@ -99,6 +78,4 @@ void orientation_vectors::apply_matrix(matrix &m)
 
 }
 
-} // math
-
-} // aspect
+}} // aspect::math
