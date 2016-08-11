@@ -246,23 +246,22 @@ inline void vec3::clamp(double fMin, double fMax)
 
 }} // aspect::math
 
-namespace v8pp {
-
 template<>
-struct convert<aspect::math::vec3>
+struct v8pp::convert<aspect::math::vec3>
 {
-	typedef aspect::math::vec3 result_type;
+	using from_type = aspect::math::vec3;
+	using to_type = v8::Handle<v8::Object>;
 
 	static bool is_valid(v8::Isolate*, v8::Handle<v8::Value> value)
 	{
 		return value->IsObject();
 	}
 
-	static result_type from_v8(v8::Isolate* isolate, v8::Handle<v8::Value> value)
+	static from_type from_v8(v8::Isolate* isolate, v8::Handle<v8::Value> value)
 	{
 		v8::HandleScope scope(isolate);
 
-		result_type result;
+		from_type result;
 		if (value->IsArray())
 		{
 			v8::Local<v8::Array> arr = value.As<v8::Array>();
@@ -292,7 +291,7 @@ struct convert<aspect::math::vec3>
 		return result;
 	}
 
-	static v8::Handle<v8::Value> to_v8(v8::Isolate* isolate, aspect::math::vec3 const& value)
+	static to_type to_v8(v8::Isolate* isolate, aspect::math::vec3 const& value)
 	{
 		v8::EscapableHandleScope scope(isolate);
 
@@ -305,7 +304,5 @@ struct convert<aspect::math::vec3>
 		return scope.Escape(obj);
 	}
 };
-
-} // v8pp
 
 #endif // MATH_VEC3_HPP_INCLUDED

@@ -97,23 +97,22 @@ inline quat   quat::operator *  (const quat &Q) const
 
 }} // aspect::math
 
-namespace v8pp {
-
 template<>
-struct convert<aspect::math::quat>
+struct v8pp::convert<aspect::math::quat>
 {
-	typedef aspect::math::quat result_type;
+	using from_type = aspect::math::quat;
+	using to_type = v8::Handle<v8::Object>;
 
 	static bool is_valid(v8::Isolate*, v8::Handle<v8::Value> value)
 	{
 		return value->IsObject();
 	}
 
-	static result_type from_v8(v8::Isolate* isolate, v8::Handle<v8::Value> value)
+	static from_type from_v8(v8::Isolate* isolate, v8::Handle<v8::Value> value)
 	{
 		v8::HandleScope scope(isolate);
 
-		result_type result;
+		from_type result;
 		if (value->IsArray())
 		{
 			v8::Local<v8::Array> arr = value.As<v8::Array>();
@@ -147,7 +146,7 @@ struct convert<aspect::math::quat>
 		return result;
 	}
 
-	static v8::Handle<v8::Value> to_v8(v8::Isolate* isolate, aspect::math::quat const& value)
+	static to_type to_v8(v8::Isolate* isolate, aspect::math::quat const& value)
 	{
 		v8::EscapableHandleScope scope(isolate);
 
@@ -161,7 +160,5 @@ struct convert<aspect::math::quat>
 		return scope.Escape(obj);
 	}
 };
-
-} // v8pp
 
 #endif // MATH_QUATERNION_HPP_INCLUDED
