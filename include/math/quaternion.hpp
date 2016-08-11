@@ -99,9 +99,6 @@ inline quat   quat::operator *  (const quat &Q) const
 
 namespace v8pp {
 
-using aspect::get_option;
-using aspect::set_option;
-
 template<>
 struct convert<aspect::math::quat>
 {

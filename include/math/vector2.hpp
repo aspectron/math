@@ -3,6 +3,9 @@
 
 #include "math/math.hpp"
 
+#include <v8pp/convert.hpp>
+#include <v8pp/object.hpp>
+
 namespace aspect { namespace math {
 
 class matrix;
@@ -145,9 +148,6 @@ inline double vec2::get_angle(const vec2& loc) const
 }} // aspect::math
 
 namespace v8pp {
-
-using aspect::get_option;
-using aspect::set_option;
 
 template<>
 struct convert<aspect::math::vec2>

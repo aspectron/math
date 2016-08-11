@@ -81,9 +81,6 @@ inline bool operator == (vec4 const& a, vec4 const& b)
 
 namespace v8pp {
 
-using aspect::get_option;
-using aspect::set_option;
-
 template<>
 struct convert<aspect::math::vec4>
 {

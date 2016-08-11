@@ -248,9 +248,6 @@ inline void vec3::clamp(double fMin, double fMax)
 
 namespace v8pp {
 
-using aspect::get_option;
-using aspect::set_option;
-
 template<>
 struct convert<aspect::math::vec3>
 {

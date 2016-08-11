@@ -4,10 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "jsx/core.hpp"
-#include "jsx/v8_core.hpp"
-
-#if OS(WINDOWS)
+#if defined(_WIN32)
 //	#pragma warning ( disable : 4251 )
 #if defined(MATH_EXPORTS)
 #define MATH_API __declspec(dllexport)

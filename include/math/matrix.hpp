@@ -19,24 +19,11 @@ struct MATH_API matrix_row
 	double operator[] (int i) const { return v[i]; }
 };
 
-#if CPU(X64) && OS(WINDOWS)
-class MATH_API __declspec(align(16)) matrix
-#else
 class MATH_API matrix
-#endif
 {
 public:
 	union
 	{
-/*
-		struct
-		{
-			__m128	m1;
-			__m128	m2;
-			__m128	m3;
-			__m128	m4;
-		};
-*/
 		struct
 		{
 			double m_11, m_12, m_13, m_14;
