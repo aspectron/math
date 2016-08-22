@@ -12,6 +12,7 @@
             'include/math/vector4.hpp',
         ],
         'source_files': [
+            'src/math.cpp',
             'src/euler_angles.cpp',
             'src/matrix.cpp',
             'src/noise.cpp',
