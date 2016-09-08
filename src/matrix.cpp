@@ -3,14 +3,6 @@
 
 namespace aspect { namespace math {
 
-double matrix::ms_identity[16] = 
-{
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f,
-};
-
 void matrix::set_orientation(const quat &quat)
 {
 	quat.to_matrix(*this);

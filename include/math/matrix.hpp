@@ -41,8 +41,6 @@ public:
 
 public:
 
-	static double ms_identity[16];
-
 	// constructors...
 
 	matrix() {}
@@ -78,10 +76,9 @@ public:
 	// initializers...
 	void set_identity()
 	{
-		memcpy(&(m[0][0]),ms_identity,sizeof(ms_identity));
-//			m_12 = m_13 = m_14 = m_21 = m_23 = m_24 = 
-//			m_31 = m_32 = m_34 = m_41 = m_42 = m_43 = 0.0f;
-//			m_11 = m_22 = m_33 = m_44 = 1.0f;
+		m_12 = m_13 = m_14 = m_21 = m_23 = m_24 = 
+		m_31 = m_32 = m_34 = m_41 = m_42 = m_43 = 0.0f;
+		m_11 = m_22 = m_33 = m_44 = 1.0f;
 	}
 
 	void zero() { ::memset(this,0,sizeof(matrix)); }
