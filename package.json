@@ -2,7 +2,7 @@
   "name": "math",
   "version": "1.0.0",
   "description": "Linear math",
-  "main": "build/Release/math.node",
+  "main": "./build/Release/math.node",
   "repository": { "type": "git", "url": "git://github.com/aspectron/math.git" },
   "author": "Aspectron Inc.",
   "license": "MIT",

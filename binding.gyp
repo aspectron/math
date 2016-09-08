@@ -25,7 +25,16 @@
         {
             'target_name': 'math',
             'cflags_cc+': ['-std=c++11', '-fexceptions'],
-            'msvs_settings': { 'VCCLCompilerTool': { 'ExceptionHandling': 1 } },
+            'configurations': {
+                'Debug': { 'msvs_settings': { 'VCCLCompilerTool': {
+                    'ExceptionHandling': 1,
+                    'RuntimeLibrary': 3, # MultiThreadedDebugDLL
+                }}},
+                'Release': { 'msvs_settings': { 'VCCLCompilerTool': {
+                    'ExceptionHandling': 1,
+                    'RuntimeLibrary': 2, # MultiThreadedDLL
+                }}},
+            },
             'xcode_settings': { 'GCC_ENABLE_CPP_EXCEPTIONS': 'YES' },
             'include_dirs': ['<@(include_dirs)'],
             'direct_dependent_settings': {
