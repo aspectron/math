@@ -9,6 +9,7 @@
   "bugs": { "url": "https://github.com/aspectron/math/issues" },
   "homepage": "https://github.com/aspectron/math#readme",
   "dependencies": {
-    "v8pp": "^1.0"
+    "v8pp": "^1.0",
+    "nitrogen": "https://github.com/aspectron/nitrogen.git#nodejs"
   }
 }
